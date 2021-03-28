@@ -10,9 +10,10 @@ body {
 }
 
 svg {
-  display: block;
-  overflow: visible;
+  width: 555px;
+  height: 494px;
 }
+
 svg text {
   fill: currentColor;
 }
