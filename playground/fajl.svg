@@ -1,0 +1,850 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="555px" height="494px">
+  <g>
+    <polygon points="45,0,60,25.98 45,51.96,15,51.96 0,25.98,15,0" fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,30,25.98)">
+    <tspan dy="0" x="0">0,0</tspan>
+  </text>
+  <g>
+    <polygon points="90,25.98,105,51.96 90,77.94,60,77.94 45,51.96,60,25.98" fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,75,51.96)">
+    <tspan dy="0" x="0">1,0</tspan>
+  </text>
+  <g>
+    <polygon points="135,0,150,25.98 135,51.96,105,51.96 90,25.98,105,0" fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,120,25.98)">
+    <tspan dy="0" x="0">2,-1</tspan>
+  </text>
+  <g>
+    <polygon points="180,25.98,195,51.96 180,77.94,150,77.94 135,51.96,150,25.98" fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,165,51.96)">
+    <tspan dy="0" x="0">3,-1</tspan>
+  </text>
+  <g>
+    <polygon points="225,0,240,25.98 225,51.96,195,51.96 180,25.98,195,0" fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,210,25.98)">
+    <tspan dy="0" x="0">4,-2</tspan>
+  </text>
+  <g>
+    <polygon points="270,25.98,285,51.96 270,77.94,240,77.94 225,51.96,240,25.98" fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,255,51.96)">
+    <tspan dy="0" x="0">5,-2</tspan>
+  </text>
+  <g>
+    <polygon points="315,0,330,25.98 315,51.96,285,51.96 270,25.98,285,0" fill="purple"></polygon>
+  </g>
+  <g>
+    <polygon points="312.75,2.25,327,25.98 312.75,49.71,287.25,49.71 273,25.98,287.25,2.25" fill="none"
+             stroke-width="1.5" stroke="#cc0000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,300,25.98)">
+    <tspan dy="0" x="0">6,-3</tspan>
+  </text>
+  <g>
+    <polygon points="360,25.98,375,51.96 360,77.94,330,77.94 315,51.96,330,25.98" fill="#009900"></polygon>
+  </g>
+  <g>
+    <polygon points="357.75,28.23,372,51.96 357.75,75.69,332.25,75.69 318,51.96,332.25,28.23" fill="none"
+             stroke-width="1.5" stroke="#cc0000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,345,51.96)">
+    <tspan dy="0" x="0">7,-3</tspan>
+  </text>
+  <g>
+    <polygon points="405,0,420,25.98 405,51.96,375,51.96 360,25.98,375,0" fill="#009900"></polygon>
+  </g>
+  <g>
+    <polygon points="402.75,2.25,417,25.98 402.75,49.71,377.25,49.71 363,25.98,377.25,2.25" fill="none"
+             stroke-width="1.5" stroke="#cc0000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,390,25.98)">
+    <tspan dy="0" x="0">8,-4</tspan>
+  </text>
+  <g>
+    <polygon points="450,25.98,465,51.96 450,77.94,420,77.94 405,51.96,420,25.98" fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,435,51.96)">
+    <tspan dy="0" x="0">9,-4</tspan>
+  </text>
+  <g>
+    <polygon points="495,0,510,25.98 495,51.96,465,51.96 450,25.98,465,0" fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,480,25.98)">
+    <tspan dy="0" x="0">10,-5</tspan>
+  </text>
+  <g>
+    <polygon points="540,25.98,555,51.96 540,77.94,510,77.94 495,51.96,510,25.98" fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,525,51.96)">
+    <tspan dy="0" x="0">11,-5</tspan>
+  </text>
+  <g>
+    <polygon points="45,51.959999999999994,60,77.94 45,103.92,15,103.92 0,77.94,15,51.959999999999994"
+             fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,30,77.94)">
+    <tspan dy="0" x="0">0,1</tspan>
+  </text>
+  <g>
+    <polygon points="90,77.94,105,103.92 90,129.9,60,129.9 45,103.92,60,77.94" fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,75,103.92)">
+    <tspan dy="0" x="0">1,1</tspan>
+  </text>
+  <g>
+    <polygon points="135,51.959999999999994,150,77.94 135,103.92,105,103.92 90,77.94,105,51.959999999999994"
+             fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,120,77.94)">
+    <tspan dy="0" x="0">2,0</tspan>
+  </text>
+  <g>
+    <polygon points="180,77.94,195,103.92 180,129.9,150,129.9 135,103.92,150,77.94" fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,165,103.92)">
+    <tspan dy="0" x="0">3,0</tspan>
+  </text>
+  <g>
+    <polygon points="225,51.959999999999994,240,77.94 225,103.92,195,103.92 180,77.94,195,51.959999999999994"
+             fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,210,77.94)">
+    <tspan dy="0" x="0">4,-1</tspan>
+  </text>
+  <g>
+    <polygon points="270,77.94,285,103.92 270,129.9,240,129.9 225,103.92,240,77.94" fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,255,103.92)">
+    <tspan dy="0" x="0">5,-1</tspan>
+  </text>
+  <g>
+    <polygon points="315,51.959999999999994,330,77.94 315,103.92,285,103.92 270,77.94,285,51.959999999999994"
+             fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,300,77.94)">
+    <tspan dy="0" x="0">6,-2</tspan>
+  </text>
+  <g>
+    <polygon points="360,77.94,375,103.92 360,129.9,330,129.9 315,103.92,330,77.94" fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,345,103.92)">
+    <tspan dy="0" x="0">7,-2</tspan>
+  </text>
+  <g>
+    <polygon points="405,51.959999999999994,420,77.94 405,103.92,375,103.92 360,77.94,375,51.959999999999994"
+             fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,390,77.94)">
+    <tspan dy="0" x="0">8,-3</tspan>
+  </text>
+  <g>
+    <polygon points="450,77.94,465,103.92 450,129.9,420,129.9 405,103.92,420,77.94" fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,435,103.92)">
+    <tspan dy="0" x="0">9,-3</tspan>
+  </text>
+  <g>
+    <polygon points="495,51.959999999999994,510,77.94 495,103.92,465,103.92 450,77.94,465,51.959999999999994"
+             fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,480,77.94)">
+    <tspan dy="0" x="0">10,-4</tspan>
+  </text>
+  <g>
+    <polygon points="540,77.94,555,103.92 540,129.9,510,129.9 495,103.92,510,77.94" fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,525,103.92)">
+    <tspan dy="0" x="0">11,-4</tspan>
+  </text>
+  <g>
+    <polygon points="45,103.92,60,129.9 45,155.88,15,155.88 0,129.9,15,103.92" fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,30,129.9)">
+    <tspan dy="0" x="0">0,2</tspan>
+  </text>
+  <g>
+    <polygon points="90,129.9,105,155.88 90,181.85999999999999,60,181.85999999999999 45,155.88,60,129.9"
+             fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,75,155.88)">
+    <tspan dy="0" x="0">1,2</tspan>
+  </text>
+  <g>
+    <polygon points="135,103.92,150,129.9 135,155.88,105,155.88 90,129.9,105,103.92" fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,120,129.9)">
+    <tspan dy="0" x="0">2,1</tspan>
+  </text>
+  <g>
+    <polygon points="180,129.9,195,155.88 180,181.85999999999999,150,181.85999999999999 135,155.88,150,129.9"
+             fill="#ffcc00"></polygon>
+  </g>
+  <g>
+    <polygon
+        points="177.75,132.15,192,155.88 177.75,179.60999999999999,152.25,179.60999999999999 138,155.88,152.25,132.15"
+        fill="none" stroke-dasharray="4" stroke-width="1.5" stroke="#000000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,165,155.88)">
+    <tspan dy="0" x="0">3,1</tspan>
+  </text>
+  <g>
+    <polygon points="225,103.92,240,129.9 225,155.88,195,155.88 180,129.9,195,103.92" fill="#ffcc00"></polygon>
+  </g>
+  <g>
+    <polygon points="222.75,106.17,237,129.9 222.75,153.63,197.25,153.63 183,129.9,197.25,106.17" fill="none"
+             stroke-dasharray="4" stroke-width="1.5" stroke="#000000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,210,129.9)">
+    <tspan dy="0" x="0">4,0</tspan>
+  </text>
+  <g>
+    <polygon points="270,129.9,285,155.88 270,181.85999999999999,240,181.85999999999999 225,155.88,240,129.9"
+             fill="#009900"></polygon>
+  </g>
+  <g>
+    <polygon
+        points="267.75,132.15,282,155.88 267.75,179.60999999999999,242.25,179.60999999999999 228,155.88,242.25,132.15"
+        fill="none" stroke-dasharray="4" stroke-width="1.5" stroke="#000000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,255,155.88)">
+    <tspan dy="0" x="0">5,0</tspan>
+  </text>
+  <g>
+    <polygon points="315,103.92,330,129.9 315,155.88,285,155.88 270,129.9,285,103.92" fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,300,129.9)">
+    <tspan dy="0" x="0">6,-1</tspan>
+  </text>
+  <g>
+    <polygon points="360,129.9,375,155.88 360,181.85999999999999,330,181.85999999999999 315,155.88,330,129.9"
+             fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,345,155.88)">
+    <tspan dy="0" x="0">7,-1</tspan>
+  </text>
+  <g>
+    <polygon points="405,103.92,420,129.9 405,155.88,375,155.88 360,129.9,375,103.92" fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,390,129.9)">
+    <tspan dy="0" x="0">8,-2</tspan>
+  </text>
+  <g>
+    <polygon points="450,129.9,465,155.88 450,181.85999999999999,420,181.85999999999999 405,155.88,420,129.9"
+             fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,435,155.88)">
+    <tspan dy="0" x="0">9,-2</tspan>
+  </text>
+  <g>
+    <polygon points="495,103.92,510,129.9 495,155.88,465,155.88 450,129.9,465,103.92" fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,480,129.9)">
+    <tspan dy="0" x="0">10,-3</tspan>
+  </text>
+  <g>
+    <polygon points="540,129.9,555,155.88 540,181.85999999999999,510,181.85999999999999 495,155.88,510,129.9"
+             fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,525,155.88)">
+    <tspan dy="0" x="0">11,-3</tspan>
+  </text>
+  <g>
+    <polygon
+        points="45,155.88,60,181.85999999999999 45,207.83999999999997,15,207.83999999999997 0,181.85999999999999,15,155.88"
+        fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,30,181.85999999999999)">
+    <tspan dy="0" x="0">0,3</tspan>
+  </text>
+  <g>
+    <polygon points="90,181.86,105,207.84 90,233.82,60,233.82 45,207.84,60,181.86" fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,75,207.84)">
+    <tspan dy="0" x="0">1,3</tspan>
+  </text>
+  <g>
+    <polygon
+        points="135,155.88,150,181.85999999999999 135,207.83999999999997,105,207.83999999999997 90,181.85999999999999,105,155.88"
+        fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,120,181.85999999999999)">
+    <tspan dy="0" x="0">2,2</tspan>
+  </text>
+  <g>
+    <polygon points="180,181.86,195,207.84 180,233.82,150,233.82 135,207.84,150,181.86" fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,165,207.84)">
+    <tspan dy="0" x="0">3,2</tspan>
+  </text>
+  <g>
+    <polygon
+        points="225,155.88,240,181.85999999999999 225,207.83999999999997,195,207.83999999999997 180,181.85999999999999,195,155.88"
+        fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,210,181.85999999999999)">
+    <tspan dy="0" x="0">4,1</tspan>
+  </text>
+  <g>
+    <polygon points="270,181.86,285,207.84 270,233.82,240,233.82 225,207.84,240,181.86" fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,255,207.84)">
+    <tspan dy="0" x="0">5,1</tspan>
+  </text>
+  <g>
+    <polygon
+        points="315,155.88,330,181.85999999999999 315,207.83999999999997,285,207.83999999999997 270,181.85999999999999,285,155.88"
+        fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,300,181.85999999999999)">
+    <tspan dy="0" x="0">6,0</tspan>
+  </text>
+  <g>
+    <polygon points="360,181.86,375,207.84 360,233.82,330,233.82 315,207.84,330,181.86" fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,345,207.84)">
+    <tspan dy="0" x="0">7,0</tspan>
+  </text>
+  <g>
+    <polygon
+        points="405,155.88,420,181.85999999999999 405,207.83999999999997,375,207.83999999999997 360,181.85999999999999,375,155.88"
+        fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,390,181.85999999999999)">
+    <tspan dy="0" x="0">8,-1</tspan>
+  </text>
+  <g>
+    <polygon points="450,181.86,465,207.84 450,233.82,420,233.82 405,207.84,420,181.86" fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,435,207.84)">
+    <tspan dy="0" x="0">9,-1</tspan>
+  </text>
+  <g>
+    <polygon
+        points="495,155.88,510,181.85999999999999 495,207.83999999999997,465,207.83999999999997 450,181.85999999999999,465,155.88"
+        fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,480,181.85999999999999)">
+    <tspan dy="0" x="0">10,-2</tspan>
+  </text>
+  <g>
+    <polygon points="540,181.86,555,207.84 540,233.82,510,233.82 495,207.84,510,181.86" fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,525,207.84)">
+    <tspan dy="0" x="0">11,-2</tspan>
+  </text>
+  <g>
+    <polygon points="45,207.84,60,233.82 45,259.8,15,259.8 0,233.82,15,207.84" fill="purple"></polygon>
+  </g>
+  <g>
+    <polygon points="42.75,210.09,57,233.82 42.75,257.55,17.25,257.55 3,233.82,17.25,210.09" fill="none"
+             stroke-width="1.5" stroke="#cc0000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,30,233.82)">
+    <tspan dy="0" x="0">0,4</tspan>
+  </text>
+  <g>
+    <polygon
+        points="90,233.82000000000002,105,259.8 90,285.78000000000003,60,285.78000000000003 45,259.8,60,233.82000000000002"
+        fill="purple"></polygon>
+  </g>
+  <g>
+    <polygon
+        points="87.75,236.07000000000002,102,259.8 87.75,283.53000000000003,62.25,283.53000000000003 48,259.8,62.25,236.07000000000002"
+        fill="none" stroke-width="1.5" stroke="#cc0000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,75,259.8)">
+    <tspan dy="0" x="0">1,4</tspan>
+  </text>
+  <g>
+    <polygon points="135,207.84,150,233.82 135,259.8,105,259.8 90,233.82,105,207.84" fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,120,233.82)">
+    <tspan dy="0" x="0">2,3</tspan>
+  </text>
+  <g>
+    <polygon
+        points="180,233.82000000000002,195,259.8 180,285.78000000000003,150,285.78000000000003 135,259.8,150,233.82000000000002"
+        fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,165,259.8)">
+    <tspan dy="0" x="0">3,3</tspan>
+  </text>
+  <g>
+    <polygon points="225,207.84,240,233.82 225,259.8,195,259.8 180,233.82,195,207.84" fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,210,233.82)">
+    <tspan dy="0" x="0">4,2</tspan>
+  </text>
+  <g>
+    <polygon
+        points="270,233.82000000000002,285,259.8 270,285.78000000000003,240,285.78000000000003 225,259.8,240,233.82000000000002"
+        fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,255,259.8)">
+    <tspan dy="0" x="0">5,2</tspan>
+  </text>
+  <g>
+    <polygon points="315,207.84,330,233.82 315,259.8,285,259.8 270,233.82,285,207.84" fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,300,233.82)">
+    <tspan dy="0" x="0">6,1</tspan>
+  </text>
+  <g>
+    <polygon
+        points="360,233.82000000000002,375,259.8 360,285.78000000000003,330,285.78000000000003 315,259.8,330,233.82000000000002"
+        fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,345,259.8)">
+    <tspan dy="0" x="0">7,1</tspan>
+  </text>
+  <g>
+    <polygon points="405,207.84,420,233.82 405,259.8,375,259.8 360,233.82,375,207.84" fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,390,233.82)">
+    <tspan dy="0" x="0">8,0</tspan>
+  </text>
+  <g>
+    <polygon
+        points="450,233.82000000000002,465,259.8 450,285.78000000000003,420,285.78000000000003 405,259.8,420,233.82000000000002"
+        fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,435,259.8)">
+    <tspan dy="0" x="0">9,0</tspan>
+  </text>
+  <g>
+    <polygon points="495,207.84,510,233.82 495,259.8,465,259.8 450,233.82,465,207.84" fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,480,233.82)">
+    <tspan dy="0" x="0">10,-1</tspan>
+  </text>
+  <g>
+    <polygon
+        points="540,233.82000000000002,555,259.8 540,285.78000000000003,510,285.78000000000003 495,259.8,510,233.82000000000002"
+        fill="#2596be"></polygon>
+  </g>
+  <g>
+    <polygon
+        points="537.75,236.07000000000002,552,259.8 537.75,283.53000000000003,512.25,283.53000000000003 498,259.8,512.25,236.07000000000002"
+        fill="none" stroke-width="1.5" stroke="#cc0000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,525,259.8)">
+    <tspan dy="0" x="0">11,-1</tspan>
+  </text>
+  <g>
+    <polygon
+        points="45,259.8,60,285.78000000000003 45,311.76000000000005,15,311.76000000000005 0,285.78000000000003,15,259.8"
+        fill="gray"></polygon>
+  </g>
+  <g>
+    <polygon
+        points="42.75,262.05,57,285.78000000000003 42.75,309.51000000000005,17.25,309.51000000000005 3,285.78000000000003,17.25,262.05"
+        fill="none" stroke-width="1.5" stroke="#cc0000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,30,285.78000000000003)">
+    <tspan dy="0" x="0">0,5</tspan>
+  </text>
+  <g>
+    <polygon
+        points="90,285.78000000000003,105,311.76000000000005 90,337.74000000000007,60,337.74000000000007 45,311.76000000000005,60,285.78000000000003"
+        fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,75,311.76000000000005)">
+    <tspan dy="0" x="0">1,5</tspan>
+  </text>
+  <g>
+    <polygon
+        points="135,259.8,150,285.78000000000003 135,311.76000000000005,105,311.76000000000005 90,285.78000000000003,105,259.8"
+        fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,120,285.78000000000003)">
+    <tspan dy="0" x="0">2,4</tspan>
+  </text>
+  <g>
+    <polygon
+        points="180,285.78000000000003,195,311.76000000000005 180,337.74000000000007,150,337.74000000000007 135,311.76000000000005,150,285.78000000000003"
+        fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,165,311.76000000000005)">
+    <tspan dy="0" x="0">3,4</tspan>
+  </text>
+  <g>
+    <polygon
+        points="225,259.8,240,285.78000000000003 225,311.76000000000005,195,311.76000000000005 180,285.78000000000003,195,259.8"
+        fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,210,285.78000000000003)">
+    <tspan dy="0" x="0">4,3</tspan>
+  </text>
+  <g>
+    <polygon
+        points="270,285.78000000000003,285,311.76000000000005 270,337.74000000000007,240,337.74000000000007 225,311.76000000000005,240,285.78000000000003"
+        fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,255,311.76000000000005)">
+    <tspan dy="0" x="0">5,3</tspan>
+  </text>
+  <g>
+    <polygon
+        points="315,259.8,330,285.78000000000003 315,311.76000000000005,285,311.76000000000005 270,285.78000000000003,285,259.8"
+        fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,300,285.78000000000003)">
+    <tspan dy="0" x="0">6,2</tspan>
+  </text>
+  <g>
+    <polygon
+        points="360,285.78000000000003,375,311.76000000000005 360,337.74000000000007,330,337.74000000000007 315,311.76000000000005,330,285.78000000000003"
+        fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,345,311.76000000000005)">
+    <tspan dy="0" x="0">7,2</tspan>
+  </text>
+  <g>
+    <polygon
+        points="405,259.8,420,285.78000000000003 405,311.76000000000005,375,311.76000000000005 360,285.78000000000003,375,259.8"
+        fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,390,285.78000000000003)">
+    <tspan dy="0" x="0">8,1</tspan>
+  </text>
+  <g>
+    <polygon
+        points="450,285.78000000000003,465,311.76000000000005 450,337.74000000000007,420,337.74000000000007 405,311.76000000000005,420,285.78000000000003"
+        fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,435,311.76000000000005)">
+    <tspan dy="0" x="0">9,1</tspan>
+  </text>
+  <g>
+    <polygon
+        points="495,259.8,510,285.78000000000003 495,311.76000000000005,465,311.76000000000005 450,285.78000000000003,465,259.8"
+        fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,480,285.78000000000003)">
+    <tspan dy="0" x="0">10,0</tspan>
+  </text>
+  <g>
+    <polygon
+        points="540,285.78000000000003,555,311.76000000000005 540,337.74000000000007,510,337.74000000000007 495,311.76000000000005,510,285.78000000000003"
+        fill="#009900"></polygon>
+  </g>
+  <g>
+    <polygon
+        points="537.75,288.03000000000003,552,311.76000000000005 537.75,335.49000000000007,512.25,335.49000000000007 498,311.76000000000005,512.25,288.03000000000003"
+        fill="none" stroke-width="1.5" stroke="#cc0000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,525,311.76000000000005)">
+    <tspan dy="0" x="0">11,0</tspan>
+  </text>
+  <g>
+    <polygon points="45,311.76,60,337.74 45,363.72,15,363.72 0,337.74,15,311.76" fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,30,337.74)">
+    <tspan dy="0" x="0">0,6</tspan>
+  </text>
+  <g>
+    <polygon points="90,337.74,105,363.72 90,389.70000000000005,60,389.70000000000005 45,363.72,60,337.74"
+             fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,75,363.72)">
+    <tspan dy="0" x="0">1,6</tspan>
+  </text>
+  <g>
+    <polygon points="135,311.76,150,337.74 135,363.72,105,363.72 90,337.74,105,311.76" fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,120,337.74)">
+    <tspan dy="0" x="0">2,5</tspan>
+  </text>
+  <g>
+    <polygon points="180,337.74,195,363.72 180,389.70000000000005,150,389.70000000000005 135,363.72,150,337.74"
+             fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,165,363.72)">
+    <tspan dy="0" x="0">3,5</tspan>
+  </text>
+  <g>
+    <polygon points="225,311.76,240,337.74 225,363.72,195,363.72 180,337.74,195,311.76" fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,210,337.74)">
+    <tspan dy="0" x="0">4,4</tspan>
+  </text>
+  <g>
+    <polygon points="270,337.74,285,363.72 270,389.70000000000005,240,389.70000000000005 225,363.72,240,337.74"
+             fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,255,363.72)">
+    <tspan dy="0" x="0">5,4</tspan>
+  </text>
+  <g>
+    <polygon points="315,311.76,330,337.74 315,363.72,285,363.72 270,337.74,285,311.76" fill="#ffcc00"></polygon>
+  </g>
+  <g>
+    <polygon points="312.75,314.01,327,337.74 312.75,361.47,287.25,361.47 273,337.74,287.25,314.01" fill="none"
+             stroke-dasharray="4" stroke-width="1.5" stroke="#000000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,300,337.74)">
+    <tspan dy="0" x="0">6,3</tspan>
+  </text>
+  <g>
+    <polygon points="360,337.74,375,363.72 360,389.70000000000005,330,389.70000000000005 315,363.72,330,337.74"
+             fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,345,363.72)">
+    <tspan dy="0" x="0">7,3</tspan>
+  </text>
+  <g>
+    <polygon points="405,311.76,420,337.74 405,363.72,375,363.72 360,337.74,375,311.76" fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,390,337.74)">
+    <tspan dy="0" x="0">8,2</tspan>
+  </text>
+  <g>
+    <polygon points="450,337.74,465,363.72 450,389.70000000000005,420,389.70000000000005 405,363.72,420,337.74"
+             fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,435,363.72)">
+    <tspan dy="0" x="0">9,2</tspan>
+  </text>
+  <g>
+    <polygon points="495,311.76,510,337.74 495,363.72,465,363.72 450,337.74,465,311.76" fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,480,337.74)">
+    <tspan dy="0" x="0">10,1</tspan>
+  </text>
+  <g>
+    <polygon points="540,337.74,555,363.72 540,389.70000000000005,510,389.70000000000005 495,363.72,510,337.74"
+             fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,525,363.72)">
+    <tspan dy="0" x="0">11,1</tspan>
+  </text>
+  <g>
+    <polygon
+        points="45,363.72,60,389.70000000000005 45,415.68000000000006,15,415.68000000000006 0,389.70000000000005,15,363.72"
+        fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,30,389.70000000000005)">
+    <tspan dy="0" x="0">0,7</tspan>
+  </text>
+  <g>
+    <polygon points="90,389.7,105,415.68 90,441.66,60,441.66 45,415.68,60,389.7" fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,75,415.68)">
+    <tspan dy="0" x="0">1,7</tspan>
+  </text>
+  <g>
+    <polygon
+        points="135,363.72,150,389.70000000000005 135,415.68000000000006,105,415.68000000000006 90,389.70000000000005,105,363.72"
+        fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,120,389.70000000000005)">
+    <tspan dy="0" x="0">2,6</tspan>
+  </text>
+  <g>
+    <polygon points="180,389.7,195,415.68 180,441.66,150,441.66 135,415.68,150,389.7" fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,165,415.68)">
+    <tspan dy="0" x="0">3,6</tspan>
+  </text>
+  <g>
+    <polygon
+        points="225,363.72,240,389.70000000000005 225,415.68000000000006,195,415.68000000000006 180,389.70000000000005,195,363.72"
+        fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,210,389.70000000000005)">
+    <tspan dy="0" x="0">4,5</tspan>
+  </text>
+  <g>
+    <polygon points="270,389.7,285,415.68 270,441.66,240,441.66 225,415.68,240,389.7" fill="gray"></polygon>
+  </g>
+  <g>
+    <polygon points="267.75,391.95,282,415.68 267.75,439.41,242.25,439.41 228,415.68,242.25,391.95" fill="none"
+             stroke-dasharray="4" stroke-width="1.5" stroke="#000000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,255,415.68)">
+    <tspan dy="0" x="0">5,5</tspan>
+  </text>
+  <g>
+    <polygon
+        points="315,363.72,330,389.70000000000005 315,415.68000000000006,285,415.68000000000006 270,389.70000000000005,285,363.72"
+        fill="gray"></polygon>
+  </g>
+  <g>
+    <polygon
+        points="312.75,365.97,327,389.70000000000005 312.75,413.43000000000006,287.25,413.43000000000006 273,389.70000000000005,287.25,365.97"
+        fill="none" stroke-dasharray="4" stroke-width="1.5" stroke="#000000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,300,389.70000000000005)">
+    <tspan dy="0" x="0">6,4</tspan>
+  </text>
+  <g>
+    <polygon points="360,389.7,375,415.68 360,441.66,330,441.66 315,415.68,330,389.7" fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,345,415.68)">
+    <tspan dy="0" x="0">7,4</tspan>
+  </text>
+  <g>
+    <polygon
+        points="405,363.72,420,389.70000000000005 405,415.68000000000006,375,415.68000000000006 360,389.70000000000005,375,363.72"
+        fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,390,389.70000000000005)">
+    <tspan dy="0" x="0">8,3</tspan>
+  </text>
+  <g>
+    <polygon points="450,389.7,465,415.68 450,441.66,420,441.66 405,415.68,420,389.7" fill="purple"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,435,415.68)">
+    <tspan dy="0" x="0">9,3</tspan>
+  </text>
+  <g>
+    <polygon
+        points="495,363.72,510,389.70000000000005 495,415.68000000000006,465,415.68000000000006 450,389.70000000000005,465,363.72"
+        fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,480,389.70000000000005)">
+    <tspan dy="0" x="0">10,2</tspan>
+  </text>
+  <g>
+    <polygon points="540,389.7,555,415.68 540,441.66,510,441.66 495,415.68,510,389.7" fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,525,415.68)">
+    <tspan dy="0" x="0">11,2</tspan>
+  </text>
+  <g>
+    <polygon points="45,415.68,60,441.66 45,467.64000000000004,15,467.64000000000004 0,441.66,15,415.68"
+             fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,30,441.66)">
+    <tspan dy="0" x="0">0,8</tspan>
+  </text>
+  <g>
+    <polygon
+        points="90,441.66,105,467.64000000000004 90,493.62000000000006,60,493.62000000000006 45,467.64000000000004,60,441.66"
+        fill="#ffcc00"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,75,467.64000000000004)">
+    <tspan dy="0" x="0">1,8</tspan>
+  </text>
+  <g>
+    <polygon points="135,415.68,150,441.66 135,467.64000000000004,105,467.64000000000004 90,441.66,105,415.68"
+             fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,120,441.66)">
+    <tspan dy="0" x="0">2,7</tspan>
+  </text>
+  <g>
+    <polygon
+        points="180,441.66,195,467.64000000000004 180,493.62000000000006,150,493.62000000000006 135,467.64000000000004,150,441.66"
+        fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,165,467.64000000000004)">
+    <tspan dy="0" x="0">3,7</tspan>
+  </text>
+  <g>
+    <polygon points="225,415.68,240,441.66 225,467.64000000000004,195,467.64000000000004 180,441.66,195,415.68"
+             fill="#2596be"></polygon>
+  </g>
+  <g>
+    <polygon
+        points="222.75,417.93,237,441.66 222.75,465.39000000000004,197.25,465.39000000000004 183,441.66,197.25,417.93"
+        fill="none" stroke-dasharray="4" stroke-width="1.5" stroke="#000000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,210,441.66)">
+    <tspan dy="0" x="0">4,6</tspan>
+  </text>
+  <g>
+    <polygon
+        points="270,441.66,285,467.64000000000004 270,493.62000000000006,240,493.62000000000006 225,467.64000000000004,240,441.66"
+        fill="#2596be"></polygon>
+  </g>
+  <g>
+    <polygon
+        points="267.75,443.91,282,467.64000000000004 267.75,491.37000000000006,242.25,491.37000000000006 228,467.64000000000004,242.25,443.91"
+        fill="none" stroke-dasharray="4" stroke-width="1.5" stroke="#000000"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,255,467.64000000000004)">
+    <tspan dy="0" x="0">5,6</tspan>
+  </text>
+  <g>
+    <polygon points="315,415.68,330,441.66 315,467.64000000000004,285,467.64000000000004 270,441.66,285,415.68"
+             fill="gray"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,300,441.66)">
+    <tspan dy="0" x="0">6,5</tspan>
+  </text>
+  <g>
+    <polygon
+        points="360,441.66,375,467.64000000000004 360,493.62000000000006,330,493.62000000000006 315,467.64000000000004,330,441.66"
+        fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,345,467.64000000000004)">
+    <tspan dy="0" x="0">7,5</tspan>
+  </text>
+  <g>
+    <polygon points="405,415.68,420,441.66 405,467.64000000000004,375,467.64000000000004 360,441.66,375,415.68"
+             fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,390,441.66)">
+    <tspan dy="0" x="0">8,4</tspan>
+  </text>
+  <g>
+    <polygon
+        points="450,441.66,465,467.64000000000004 450,493.62000000000006,420,493.62000000000006 405,467.64000000000004,420,441.66"
+        fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,435,467.64000000000004)">
+    <tspan dy="0" x="0">9,4</tspan>
+  </text>
+  <g>
+    <polygon points="495,415.68,510,441.66 495,467.64000000000004,465,467.64000000000004 450,441.66,465,415.68"
+             fill="#2596be"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central" transform="matrix(1,0,0,1,480,441.66)">
+    <tspan dy="0" x="0">10,3</tspan>
+  </text>
+  <g>
+    <polygon
+        points="540,441.66,555,467.64000000000004 540,493.62000000000006,510,493.62000000000006 495,467.64000000000004,510,441.66"
+        fill="#009900"></polygon>
+  </g>
+  <text font-size="15" text-anchor="middle" dominant-baseline="central"
+        transform="matrix(1,0,0,1,525,467.64000000000004)">
+    <tspan dy="0" x="0">11,3</tspan>
+  </text>
+</svg>
