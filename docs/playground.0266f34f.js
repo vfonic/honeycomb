@@ -2261,6 +2261,7 @@ gatherAndRender();
   const player = document.querySelector('select[name="player"]').value;
   const habitat = document.querySelector('input[name="habitat"]');
   gameplayEl.value += `${player} ${qnr} ${habitat.checked ? '✅' : '⛔️'}\n`;
+  gameplayEl.scrollTop = gameplayEl.scrollHeight;
 });
 },{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];

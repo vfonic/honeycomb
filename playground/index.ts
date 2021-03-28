@@ -98,4 +98,5 @@ document.querySelector('.js-submit')?.addEventListener('click', () => {
   const player = (document.querySelector('select[name="player"]')! as HTMLInputElement).value
   const habitat = document.querySelector('input[name="habitat"]')! as HTMLInputElement
   gameplayEl.value += `${player} ${qnr} ${habitat.checked ? '✅' : '⛔️'}\n`
+  gameplayEl.scrollTop = gameplayEl.scrollHeight
 })
