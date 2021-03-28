@@ -1,5 +1,5 @@
+import { HexWithTerrain, renderAll } from './render'
 import { TILES } from './tiles'
-import { render } from './render'
 import { createHexPrototype, Grid, Hex, rectangle } from '../src'
 
 interface CustomHex extends Hex {
@@ -28,7 +28,7 @@ const tilesToArray = (tilesOrder: string[]) => {
     tilesIndex.push(tileIndex)
 
     const isFlipped = !!tile[1]
-    tiles.push(isFlipped ? TILES[tileIndex].reverse() : TILES[tileIndex])
+    tiles.push(isFlipped ? [...TILES[tileIndex]].reverse() : TILES[tileIndex])
   })
 
   const result = []
@@ -50,7 +50,7 @@ const tilesToArray = (tilesOrder: string[]) => {
 }
 
 const renderTiles = (tilesOrder: string[]) => {
-  const hexagonsOrdered = []
+  const hexagonsOrdered: HexWithTerrain[] = []
   const tilesInArray = tilesToArray(tilesOrder)
 
   // grid.each(render)
@@ -62,19 +62,28 @@ const renderTiles = (tilesOrder: string[]) => {
       // grid.store.set(`${hex.q},${hex.r}`, hex)
       // console.log('tilesInArray[' + index + ']:', tilesInArray[index])
       index++
-      render(hex)
+      // render(hex)
     })
     .run()
+  renderAll(hexagonsOrdered)
 }
 
-document.querySelectorAll('.js-tilesPosition').forEach((el) => {
-  el.addEventListener('input', () => {
-    const values = [...document.querySelectorAll('.js-tilesPosition')].map((el) => el.value)
-    document.querySelectorAll('.js-tilesPositionCheckbox').forEach((el, i) => {
-      values[i] += el.checked ? 'r' : ''
-    })
-    renderTiles(values)
+const gatherAndRender = () => {
+  const values: string[] = []
+  Array.prototype.forEach.call(document.querySelectorAll('.js-tilesPosition'), (el, i) =>
+    values.push(el.value || i + 1),
+  )
+  document.querySelectorAll('.js-tilesPositionCheckbox').forEach((el, i) => {
+    const element = el as HTMLInputElement
+    values[i] += element.checked ? 'r' : ''
   })
+  renderTiles(values)
+}
+
+document.querySelectorAll('.js-tilesPosition').forEach((el) => el.addEventListener('input', gatherAndRender))
+
+document.querySelectorAll('.js-tilesPositionCheckbox').forEach((el) => {
+  el.addEventListener('change', gatherAndRender)
 })
 
 renderTiles(['1', '2', '3', '4', '5', '6'])
