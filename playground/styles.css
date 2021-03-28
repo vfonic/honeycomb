@@ -6,7 +6,8 @@ body {
 body {
   margin: 2vmin;
   font-family: sans-serif;
-  color: #333;
+  color: #ddd;
+  background: #333;
 }
 
 svg {

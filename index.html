@@ -3,69 +3,99 @@
   <head>
     <meta charset="UTF-8" />
     <title>Honeycomb playground</title>
-    <link rel="stylesheet" href='playground/styles.css' />
-    <link rel="stylesheet" href='playground/bootstrap-5.0.0-beta3-dist/css/bootstrap.min.css' />
+    <link rel="stylesheet" href="playground/styles.css" />
+    <link rel="stylesheet" href="playground/bootstrap-5.0.0-beta3-dist/css/bootstrap.min.css" />
   </head>
   <body>
-    <div class="container">
+    <div class="container" style="margin-top: 60px">
       <div class="row">
-        <div class="col-6">
+        <div class="col-sm-12 col-lg-6">
           <form class="row">
             <div class="col-12">
               <h2>Tiles order (row-by-row, from left to right)</h2>
             </div>
             <div class="col-6">
-              <input type="text" name="one-tile" value="1" class="js-tilesPosition" />
-              <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input js-tilesPositionCheckbox" id="one-reversed" />
-                <label class="form-check-label" for="one-reversed">Reversed</label>
-              </div>
+              <input
+                type="text"
+                maxlength="1"
+                name="one-tile"
+                value="1"
+                class="js-tilesPosition"
+                style="max-width: 28px; text-align: center"
+              />
+              <input type="checkbox" class="js-tilesPositionCheckbox" id="one-reversed" />
+              <label class="form-check-label" for="one-reversed">Reversed</label>
             </div>
             <div class="col-6">
-              <input type="text" name="two-tile" value="2" class="js-tilesPosition" />
-              <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input js-tilesPositionCheckbox" id="two-reversed" />
-                <label class="form-check-label" for="two-reversed">Reversed</label>
-              </div>
+              <input
+                type="text"
+                maxlength="1"
+                name="two-tile"
+                value="2"
+                class="js-tilesPosition"
+                style="max-width: 28px; text-align: center"
+              />
+              <input type="checkbox" class="js-tilesPositionCheckbox" id="two-reversed" />
+              <label class="form-check-label" for="two-reversed">Reversed</label>
             </div>
             <div class="col-6">
-              <input type="text" name="three-tile" value="3" class="js-tilesPosition" />
-              <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input js-tilesPositionCheckbox" id="three-reversed" />
-                <label class="form-check-label" for="three-reversed">Reversed</label>
-              </div>
+              <input
+                type="text"
+                maxlength="1"
+                name="three-tile"
+                value="3"
+                class="js-tilesPosition"
+                style="max-width: 28px; text-align: center"
+              />
+              <input type="checkbox" class="js-tilesPositionCheckbox" id="three-reversed" />
+              <label class="form-check-label" for="three-reversed">Reversed</label>
             </div>
             <div class="col-6">
-              <input type="text" name="four-tile" value="4" class="js-tilesPosition" />
-              <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input js-tilesPositionCheckbox" id="four-reversed" />
-                <label class="form-check-label" for="four-reversed">Reversed</label>
-              </div>
+              <input
+                type="text"
+                maxlength="1"
+                name="four-tile"
+                value="4"
+                class="js-tilesPosition"
+                style="max-width: 28px; text-align: center"
+              />
+              <input type="checkbox" class="js-tilesPositionCheckbox" id="four-reversed" />
+              <label class="form-check-label" for="four-reversed">Reversed</label>
             </div>
             <div class="col-6">
-              <input type="text" name="five-tile" value="5" class="js-tilesPosition" />
-              <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input js-tilesPositionCheckbox" id="five-reversed" />
-                <label class="form-check-label" for="five-reversed">Reversed</label>
-              </div>
+              <input
+                type="text"
+                maxlength="1"
+                name="five-tile"
+                value="5"
+                class="js-tilesPosition"
+                style="max-width: 28px; text-align: center"
+              />
+              <input type="checkbox" class="js-tilesPositionCheckbox" id="five-reversed" />
+              <label class="form-check-label" for="five-reversed">Reversed</label>
             </div>
             <div class="col-6">
-              <input type="text" name="six-tile" value="6" class="js-tilesPosition" />
-              <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input js-tilesPositionCheckbox" id="six-reversed" />
-                <label class="form-check-label" for="six-reversed">Reversed</label>
-              </div>
+              <input
+                type="text"
+                maxlength="1"
+                name="six-tile"
+                value="6"
+                class="js-tilesPosition"
+                style="max-width: 28px; text-align: center"
+              />
+              <input type="checkbox" class="js-tilesPositionCheckbox" id="six-reversed" />
+              <label class="form-check-label" for="six-reversed">Reversed</label>
             </div>
           </form>
         </div>
 
-        <div class="col-6">
+        <div class="col-sm-12 col-lg-6">
           <div class="js-map" style="margin: 0 auto"></div>
         </div>
       </div>
     </div>
 
-    <script src='playground/bootstrap-5.0.0-beta3-dist/js/bootstrap.bundle.min.js'></script>
-    <script src='playground/index.ts'></script>
+    <script src="playground/bootstrap-5.0.0-beta3-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="playground/index.ts"></script>
   </body>
 </html>
