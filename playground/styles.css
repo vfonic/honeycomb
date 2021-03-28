@@ -13,8 +13,23 @@ body {
 svg {
   width: 555px;
   height: 494px;
+  cursor: pointer;
+}
+
+svg g {
+  transform-box: fill-box;
 }
 
 svg text {
   fill: currentColor;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
 }

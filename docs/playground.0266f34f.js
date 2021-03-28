@@ -173,7 +173,7 @@ exports.TILES = TILES;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.render = exports.renderAll = void 0;
+exports.render = exports.highlightSelectedHex = exports.renderAll = void 0;
 
 var _tiles = require("./tiles");
 
@@ -188,9 +188,7 @@ if (!mapWrapperEl) {
 const renderAll = hexes => {
   mapWrapperEl.innerHTML = `
     <svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='555px' height='494px'>
-      <g>
         ${hexes.map(hex => render(hex)).join('')}
-      </g>
     </svg>
   `;
 };
@@ -217,7 +215,7 @@ const fillHexagon = hex => {
 
 
   return ` 
-    <polygon points='${hex.corners.map(({
+    <polygon class='js-highlightHex' points='${hex.corners.map(({
     x,
     y
   }) => `${x},${y}`).join(',')}' fill='${fill}'></polygon>
@@ -229,34 +227,13 @@ const DX = [-0.75, -1, -0.75, 0.75, 1, 0.75];
 const DY = [0.75, 0, -0.75, -0.75, 0, 0.75];
 
 const addBearsAndCougars = hex => {
-  var _hex$terrain6, _hex$terrain7, _hex$terrain8, _hex$terrain9;
+  var _hex$terrain6, _hex$terrain7, _hex$terrain8;
 
   if (!((_hex$terrain6 = hex.terrain) !== null && _hex$terrain6 !== void 0 && _hex$terrain6.includes('bears')) && !((_hex$terrain7 = hex.terrain) !== null && _hex$terrain7 !== void 0 && _hex$terrain7.includes('cougars'))) {
-    return;
+    return '';
   }
 
-  const stroke = {
-    width: 1.5
-  };
-
-  if ((_hex$terrain8 = hex.terrain) !== null && _hex$terrain8 !== void 0 && _hex$terrain8.includes('bears')) {
-    stroke.color = '#000';
-    stroke.dasharray = 4;
-  } else if ((_hex$terrain9 = hex.terrain) !== null && _hex$terrain9 !== void 0 && _hex$terrain9.includes('cougars')) {
-    stroke.color = '#c00';
-  } // const polygon2 = draw
-  //   .polygon(
-  //     hex.corners.map(({ x, y }, i) => {
-  //       x += BORDER_DISTANCE * DX[i]
-  //       y += BORDER_DISTANCE * DY[i]
-  //       return `${x},${y}`
-  //     }),
-  //   )
-  //   .fill('none')
-  //   .stroke(stroke)
-  // draw.group().add(polygon2)
-
-
+  const color = (_hex$terrain8 = hex.terrain) !== null && _hex$terrain8 !== void 0 && _hex$terrain8.includes('bears') ? '#000' : '#b00';
   return `
     <polygon points='${hex.corners.map(({
     x,
@@ -265,7 +242,7 @@ const addBearsAndCougars = hex => {
     x += BORDER_DISTANCE * DX[i];
     y += BORDER_DISTANCE * DY[i];
     return `${x},${y}`;
-  })}' fill='none' stroke-width='1.5' stroke='${stroke.color}' />
+  })}' fill='none' stroke-width='1.5' stroke='${color}' />
   `;
 };
 
@@ -288,12 +265,33 @@ const addCoordinates = hex => {
   `;
 };
 
+const highlightSelectedHex = hex => {
+  if (!hex) return '';
+  const graphicsEl = mapWrapperEl.querySelector(`g[data-hex="${hex.q},${hex.r}"]`);
+  if (!graphicsEl) return '';
+  const oldHighlightedEl = mapWrapperEl.querySelector('[highlighted]');
+  oldHighlightedEl && oldHighlightedEl.remove();
+  graphicsEl.innerHTML += `
+    <polygon highlighted points='${hex.corners.map(({
+    x,
+    y
+  }, i) => {
+    x += BORDER_DISTANCE * DX[i] / 3;
+    y += BORDER_DISTANCE * DY[i] / 3;
+    return `${x},${y}`;
+  })}' fill='none' stroke-width='2' stroke='#fff' />
+  `;
+};
+
+exports.highlightSelectedHex = highlightSelectedHex;
+
 const render = hex => {
   let result = '';
   result += fillHexagon(hex);
   result += addBearsAndCougars(hex);
   result += addCoordinates(hex);
-  return result;
+  result += highlightSelectedHex(hex);
+  return `<g data-hex='${hex.q},${hex.r}'>${result}</g>`;
 };
 
 exports.render = render;
@@ -2174,6 +2172,8 @@ var _tiles = require("./tiles");
 
 var _src = require("../src");
 
+var _document$querySelect;
+
 const hexPrototype = (0, _src.createHexPrototype)({
   dimensions: {
     width: 60,
@@ -2220,6 +2220,8 @@ const tilesToArray = tilesOrder => {
   return result;
 };
 
+let qnr = '0,0';
+
 const renderTiles = tilesOrder => {
   const hexagonsOrdered = [];
   const tilesInArray = tilesToArray(tilesOrder); // grid.each(render)
@@ -2233,23 +2235,33 @@ const renderTiles = tilesOrder => {
     index++; // render(hex)
   }).run();
   (0, _render.renderAll)(hexagonsOrdered);
+  (0, _render.highlightSelectedHex)(grid.store.get(qnr));
 };
 
 const gatherAndRender = () => {
   const values = [];
-  Array.prototype.forEach.call(document.querySelectorAll('.js-tilesPosition'), (el, i) => values.push(el.value || i + 1));
-  document.querySelectorAll('.js-tilesPositionCheckbox').forEach((el, i) => {
-    const element = el;
-    values[i] += element.checked ? 'r' : '';
-  });
+  const forEach = Array.prototype.forEach;
+  forEach.call(document.querySelectorAll('.js-tilesPosition'), (el, i) => values.push(el.value || i + 1));
+  forEach.call(document.querySelectorAll('.js-tilesPositionCheckbox'), (el, i) => values[i] += el.checked ? 'r' : '');
   renderTiles(values);
 };
 
 document.querySelectorAll('.js-tilesPosition').forEach(el => el.addEventListener('input', gatherAndRender));
-document.querySelectorAll('.js-tilesPositionCheckbox').forEach(el => {
-  el.addEventListener('change', gatherAndRender);
+document.querySelectorAll('.js-tilesPositionCheckbox').forEach(el => el.addEventListener('change', gatherAndRender));
+document.addEventListener('click', e => {
+  const clickEl = e.target;
+  const hexEl = clickEl && clickEl.closest('[data-hex]');
+  if (!hexEl) return;
+  qnr = hexEl.dataset.hex || '0,0';
+  (0, _render.highlightSelectedHex)(grid.store.get(qnr));
 });
 gatherAndRender();
+(_document$querySelect = document.querySelector('.js-submit')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', () => {
+  const gameplayEl = document.getElementById('gameplay');
+  const player = document.querySelector('select[name="player"]').value;
+  const habitat = document.querySelector('input[name="habitat"]');
+  gameplayEl.value += `${player} ${qnr} ${habitat.checked ? '✅' : '⛔️'}\n`;
+});
 },{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';

@@ -12,11 +12,22 @@
         <div class="col-sm-12 col-lg-6">
           <form class="row">
             <div class="col-12">
+              <label for="number-of-players" class="form-label">Number of players</label>
+              <input
+                id="number-of-players"
+                type="number"
+                maxlength="1"
+                name="number-of-players"
+                value="3"
+                style="max-width: 28px; text-align: center"
+              />
+            </div>
+            <div class="col-12">
               <h2>Tiles order (row-by-row, from left to right)</h2>
             </div>
             <div class="col-6">
               <input
-                type="text"
+                type="number"
                 maxlength="1"
                 name="one-tile"
                 value="1"
@@ -28,7 +39,7 @@
             </div>
             <div class="col-6">
               <input
-                type="text"
+                type="number"
                 maxlength="1"
                 name="two-tile"
                 value="2"
@@ -40,7 +51,7 @@
             </div>
             <div class="col-6">
               <input
-                type="text"
+                type="number"
                 maxlength="1"
                 name="three-tile"
                 value="3"
@@ -52,7 +63,7 @@
             </div>
             <div class="col-6">
               <input
-                type="text"
+                type="number"
                 maxlength="1"
                 name="four-tile"
                 value="4"
@@ -64,7 +75,7 @@
             </div>
             <div class="col-6">
               <input
-                type="text"
+                type="number"
                 maxlength="1"
                 name="five-tile"
                 value="5"
@@ -76,7 +87,7 @@
             </div>
             <div class="col-6">
               <input
-                type="text"
+                type="number"
                 maxlength="1"
                 name="six-tile"
                 value="6"
@@ -86,11 +97,65 @@
               <input type="checkbox" class="js-tilesPositionCheckbox" id="six-reversed" />
               <label class="form-check-label" for="six-reversed">Reversed</label>
             </div>
+
+            <div class="mt-3 col-6">
+              <label for="initial-hint" class="form-label">Initial hint</label>
+              <input class="form-control" list="hints" id="initial-hint" placeholder="Type to search..." />
+              <datalist id="hints">
+                <option value="On forest or desert"></option>
+                <option value="On forest or water"></option>
+                <option value="On forest or swamp"></option>
+                <option value="On forest or mountain"></option>
+                <option value="On desert or water"></option>
+                <option value="On desert or swamp"></option>
+                <option value="On desert or mountain"></option>
+                <option value="On water or swamp"></option>
+                <option value="On water or mountain"></option>
+                <option value="On swamp or mountain"></option>
+
+                <option value="Within one space of forest"></option>
+                <option value="Within one space of desert"></option>
+                <option value="Within one space of swamp"></option>
+                <option value="Within one space of mountain"></option>
+                <option value="Within one space of water"></option>
+                <option value="Within one space of either animal territory"></option>
+
+                <option value="Within two spaces of a standing stone"></option>
+                <option value="Within two spaces of an abandoned shack"></option>
+                <option value="Within two spaces of bear territory"></option>
+                <option value="Within two spaces of cougar territory"></option>
+
+                <option value="Within three spaces of a blue structure"></option>
+                <option value="Within three spaces of a white structure"></option>
+                <option value="Within three spaces of a green structure"></option>
+                <!-- <option value="Within three spaces of a black structure"></option>-->
+              </datalist>
+            </div>
+
+            <div class="col-6"></div>
+
+            <div class="mt-3 col-12">
+              <label for="gameplay" class="form-label" style="display: block">Gameplay</label>
+              <textarea id="gameplay" style="pointer-events: none; width: 100%" rows="7"></textarea>
+            </div>
           </form>
         </div>
 
         <div class="col-sm-12 col-lg-6">
           <div class="js-map" style="margin: 0 auto"></div>
+          <form class="row mt-3">
+            <div class="col">
+              <label for="player" class="form-label">Player</label>
+              <select name="player" id="player">
+                <option value="Red">Red</option>
+                <option value="Blue">Blue</option>
+                <option value="Green">Green</option>
+              </select>
+              <input type="checkbox" id="could-be-habitat" name="habitat" />
+              <label class="form-check-label" for="could-be-habitat">Could be habitat</label>
+              <button type="button" class="btn btn-primary btn-sm js-submit">Submit</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

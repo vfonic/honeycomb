@@ -13,9 +13,7 @@ if (!mapWrapperEl) {
 export const renderAll = (hexes: HexWithTerrain[]) => {
   mapWrapperEl.innerHTML = `
     <svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='555px' height='494px'>
-      <g>
         ${hexes.map((hex) => render(hex)).join('')}
-      </g>
     </svg>
   `
 }
@@ -36,7 +34,9 @@ const fillHexagon = (hex: HexWithTerrain) => {
   // const polygon = draw.polygon(hex.corners.map(({ x, y }) => `${x},${y}`)).fill(fill)
   // draw.group().add(polygon)
   return ` 
-    <polygon points='${hex.corners.map(({ x, y }) => `${x},${y}`).join(',')}' fill='${fill}'></polygon>
+    <polygon class='js-highlightHex' points='${hex.corners
+      .map(({ x, y }) => `${x},${y}`)
+      .join(',')}' fill='${fill}'></polygon>
   `
 }
 
@@ -47,35 +47,17 @@ const DX = [-0.75, -1, -0.75, 0.75, 1, 0.75]
 const DY = [0.75, 0, -0.75, -0.75, 0, 0.75]
 const addBearsAndCougars = (hex: HexWithTerrain) => {
   if (!hex.terrain?.includes('bears') && !hex.terrain?.includes('cougars')) {
-    return
+    return ''
   }
 
-  const stroke: any = { width: 1.5 }
-  if (hex.terrain?.includes('bears')) {
-    stroke.color = '#000'
-    stroke.dasharray = 4
-  } else if (hex.terrain?.includes('cougars')) {
-    stroke.color = '#c00'
-  }
-
-  // const polygon2 = draw
-  //   .polygon(
-  //     hex.corners.map(({ x, y }, i) => {
-  //       x += BORDER_DISTANCE * DX[i]
-  //       y += BORDER_DISTANCE * DY[i]
-  //       return `${x},${y}`
-  //     }),
-  //   )
-  //   .fill('none')
-  //   .stroke(stroke)
-  // draw.group().add(polygon2)
+  const color = hex.terrain?.includes('bears') ? '#000' : '#b00'
 
   return `
     <polygon points='${hex.corners.map(({ x, y }, i) => {
       x += BORDER_DISTANCE * DX[i]
       y += BORDER_DISTANCE * DY[i]
       return `${x},${y}`
-    })}' fill='none' stroke-width='1.5' stroke='${stroke.color}' />
+    })}' fill='none' stroke-width='1.5' stroke='${color}' />
   `
 }
 
@@ -100,10 +82,28 @@ const addCoordinates = (hex: Hex) => {
   `
 }
 
+export const highlightSelectedHex = (hex?: Hex) => {
+  if (!hex) return ''
+  const graphicsEl = mapWrapperEl.querySelector(`g[data-hex="${hex.q},${hex.r}"]`)
+  if (!graphicsEl) return ''
+
+  const oldHighlightedEl = mapWrapperEl.querySelector('[highlighted]')
+  oldHighlightedEl && oldHighlightedEl.remove()
+
+  graphicsEl.innerHTML += `
+    <polygon highlighted points='${hex.corners.map(({ x, y }, i) => {
+      x += (BORDER_DISTANCE * DX[i]) / 3
+      y += (BORDER_DISTANCE * DY[i]) / 3
+      return `${x},${y}`
+    })}' fill='none' stroke-width='2' stroke='#fff' />
+  `
+}
+
 export const render = (hex: HexWithTerrain): string => {
   let result = ''
   result += fillHexagon(hex)
   result += addBearsAndCougars(hex)
   result += addCoordinates(hex)
-  return result
+  result += highlightSelectedHex(hex)
+  return `<g data-hex='${hex.q},${hex.r}'>${result}</g>`
 }
