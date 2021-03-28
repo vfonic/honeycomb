@@ -12,7 +12,7 @@
     "clean": "rm -rf dist && mkdir dist",
     "dev": "npm run clean && rollup --config --watch",
     "lint": "eslint \"{,!(dist)/**/}*.{js,ts}\" --fix",
-    "playground": "parcel index.html --out-dir playground/dist --cache-dir playground/.cache",
+    "playground": "parcel index.html --out-dir docs --cache-dir playground/.cache",
     "postpublish": "pinst --enable",
     "prepublishOnly": "pinst --disable",
     "prerelease": "npm run lint && npm test && NODE_ENV=production npm run build",

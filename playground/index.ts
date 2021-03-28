@@ -86,4 +86,4 @@ document.querySelectorAll('.js-tilesPositionCheckbox').forEach((el) => {
   el.addEventListener('change', gatherAndRender)
 })
 
-renderTiles(['1', '2', '3', '4', '5', '6'])
+gatherAndRender()
