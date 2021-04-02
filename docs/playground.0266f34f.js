@@ -123,7 +123,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TILES = exports.TILE_SIX = exports.TILE_FIVE = exports.TILE_FOUR = exports.TILE_THREE = exports.TILE_TWO = exports.TILE_ONE = exports.WC = exports.SC = exports.MC = exports.FC = exports.WB = exports.MB = exports.FB = exports.DB = exports.W = exports.S = exports.M = exports.F = exports.D = void 0;
+exports.tilesToArray = exports.TILES = exports.TILE_SIX = exports.TILE_FIVE = exports.TILE_FOUR = exports.TILE_THREE = exports.TILE_TWO = exports.TILE_ONE = exports.WC = exports.SC = exports.MC = exports.FC = exports.WB = exports.MB = exports.FB = exports.DB = exports.W = exports.S = exports.M = exports.F = exports.D = void 0;
 const D = 'desert',
       F = 'forest',
       M = 'mountain',
@@ -162,11 +162,39 @@ const TILE_FIVE = [S, S, S, M, M, M, S, D, D, W, M, MB, D, D, W, W, WB, WB];
 exports.TILE_FIVE = TILE_FIVE;
 const TILE_SIX = [DB, D, S, S, S, F, MB, M, S, S, F, F, M, W, W, W, W, F];
 exports.TILE_SIX = TILE_SIX;
-const TILES = [TILE_ONE, TILE_TWO, TILE_THREE, TILE_FOUR, TILE_FIVE, TILE_SIX]; // def upside_down(tile_number)
-//   TILES[tile_number].reverse
-// end
-
+const TILES = [TILE_ONE, TILE_TWO, TILE_THREE, TILE_FOUR, TILE_FIVE, TILE_SIX];
 exports.TILES = TILES;
+
+const tilesToArray = tilesOrder => {
+  const tilesIndex = [];
+  const tiles = [];
+  tilesOrder.forEach(tile => {
+    const tileIndex = Number(tile[0]) - 1; // convert to zero-based index
+
+    tilesIndex.push(tileIndex);
+    const isFlipped = !!tile[1];
+    tiles.push(isFlipped ? [...TILES[tileIndex]].reverse() : TILES[tileIndex]);
+  });
+  const result = [];
+
+  for (let pair = 0; pair < 3; pair++) {
+    for (let j = 0; j < 3; j++) {
+      for (let coordinate = 0; coordinate < 6; coordinate++) {
+        const leftTiles = tiles[pair * 2];
+        result.push(leftTiles[j * 6 + coordinate]);
+      }
+
+      for (let coordinate = 0; coordinate < 6; coordinate++) {
+        const rightTiles = tiles[pair * 2 + 1];
+        result.push(rightTiles[j * 6 + coordinate]);
+      }
+    }
+  }
+
+  return result;
+};
+
+exports.tilesToArray = tilesToArray;
 },{}],"playground/render.ts":[function(require,module,exports) {
 "use strict";
 
@@ -196,19 +224,17 @@ const renderAll = hexes => {
 exports.renderAll = renderAll;
 
 const fillHexagon = hex => {
-  var _hex$terrain, _hex$terrain2, _hex$terrain3, _hex$terrain4, _hex$terrain5;
-
   let fill = 'none';
 
-  if ((_hex$terrain = hex.terrain) !== null && _hex$terrain !== void 0 && _hex$terrain.includes(_tiles.F)) {
+  if (hex.terrain.includes(_tiles.F)) {
     fill = '#009900';
-  } else if ((_hex$terrain2 = hex.terrain) !== null && _hex$terrain2 !== void 0 && _hex$terrain2.includes(_tiles.W)) {
+  } else if (hex.terrain.includes(_tiles.W)) {
     fill = '#2596be';
-  } else if ((_hex$terrain3 = hex.terrain) !== null && _hex$terrain3 !== void 0 && _hex$terrain3.includes(_tiles.D)) {
+  } else if (hex.terrain.includes(_tiles.D)) {
     fill = '#ffcc00';
-  } else if ((_hex$terrain4 = hex.terrain) !== null && _hex$terrain4 !== void 0 && _hex$terrain4.includes(_tiles.M)) {
+  } else if (hex.terrain.includes(_tiles.M)) {
     fill = 'gray';
-  } else if ((_hex$terrain5 = hex.terrain) !== null && _hex$terrain5 !== void 0 && _hex$terrain5.includes(_tiles.S)) {
+  } else if (hex.terrain.includes(_tiles.S)) {
     fill = 'purple';
   } // const polygon = draw.polygon(hex.corners.map(({ x, y }) => `${x},${y}`)).fill(fill)
   // draw.group().add(polygon)
@@ -227,13 +253,11 @@ const DX = [-0.75, -1, -0.75, 0.75, 1, 0.75];
 const DY = [0.75, 0, -0.75, -0.75, 0, 0.75];
 
 const addBearsAndCougars = hex => {
-  var _hex$terrain6, _hex$terrain7, _hex$terrain8;
-
-  if (!((_hex$terrain6 = hex.terrain) !== null && _hex$terrain6 !== void 0 && _hex$terrain6.includes('bears')) && !((_hex$terrain7 = hex.terrain) !== null && _hex$terrain7 !== void 0 && _hex$terrain7.includes('cougars'))) {
+  if (!hex.terrain.includes('bears') && !hex.terrain.includes('cougars')) {
     return '';
   }
 
-  const color = (_hex$terrain8 = hex.terrain) !== null && _hex$terrain8 !== void 0 && _hex$terrain8.includes('bears') ? '#000' : '#b00';
+  const color = hex.terrain.includes('bears') ? '#000' : '#b00';
   return `
     <polygon points='${hex.corners.map(({
     x,
@@ -269,7 +293,7 @@ const highlightSelectedHex = hex => {
   if (!hex) return '';
   const graphicsEl = mapWrapperEl.querySelector(`g[data-hex="${hex.q},${hex.r}"]`);
   if (!graphicsEl) return '';
-  const oldHighlightedEl = mapWrapperEl.querySelector('[highlighted]');
+  const oldHighlightedEl = mapWrapperEl.querySelector('polygon[highlighted]');
   oldHighlightedEl && oldHighlightedEl.remove();
   graphicsEl.innerHTML += `
     <polygon highlighted points='${hex.corners.map(({
@@ -291,157 +315,11 @@ const render = hex => {
   result += addBearsAndCougars(hex);
   result += addCoordinates(hex);
   result += highlightSelectedHex(hex);
-  return `<g data-hex='${hex.q},${hex.r}'>${result}</g>`;
+  return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive ? '1' : '0.5'}'>${result}</g>`;
 };
 
 exports.render = render;
-},{"./tiles":"playground/tiles.ts"}],"src/compass/compass.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Compass = exports.CompassDirection = exports.OrdinalCompassDirection = exports.CardinalCompassDirection = void 0;
-var CardinalCompassDirection;
-exports.CardinalCompassDirection = CardinalCompassDirection;
-
-(function (CardinalCompassDirection) {
-  CardinalCompassDirection[CardinalCompassDirection["N"] = 0] = "N";
-  CardinalCompassDirection[CardinalCompassDirection["E"] = 2] = "E";
-  CardinalCompassDirection[CardinalCompassDirection["S"] = 4] = "S";
-  CardinalCompassDirection[CardinalCompassDirection["W"] = 6] = "W";
-})(CardinalCompassDirection || (exports.CardinalCompassDirection = CardinalCompassDirection = {}));
-
-var OrdinalCompassDirection;
-exports.OrdinalCompassDirection = OrdinalCompassDirection;
-
-(function (OrdinalCompassDirection) {
-  OrdinalCompassDirection[OrdinalCompassDirection["NE"] = 1] = "NE";
-  OrdinalCompassDirection[OrdinalCompassDirection["SE"] = 3] = "SE";
-  OrdinalCompassDirection[OrdinalCompassDirection["SW"] = 5] = "SW";
-  OrdinalCompassDirection[OrdinalCompassDirection["NW"] = 7] = "NW";
-})(OrdinalCompassDirection || (exports.OrdinalCompassDirection = OrdinalCompassDirection = {}));
-
-var CompassDirection;
-exports.CompassDirection = CompassDirection;
-
-(function (CompassDirection) {
-  CompassDirection[CompassDirection["N"] = 0] = "N";
-  CompassDirection[CompassDirection["NE"] = 1] = "NE";
-  CompassDirection[CompassDirection["E"] = 2] = "E";
-  CompassDirection[CompassDirection["SE"] = 3] = "SE";
-  CompassDirection[CompassDirection["S"] = 4] = "S";
-  CompassDirection[CompassDirection["SW"] = 5] = "SW";
-  CompassDirection[CompassDirection["W"] = 6] = "W";
-  CompassDirection[CompassDirection["NW"] = 7] = "NW";
-})(CompassDirection || (exports.CompassDirection = CompassDirection = {}));
-
-class Compass {
-  constructor(direction = CompassDirection.N) {
-    this.direction = typeof direction === 'number' ? direction : CompassDirection[direction];
-  }
-
-  static of(direction = CompassDirection.N) {
-    return new Compass(direction);
-  }
-
-  static isCardinal(direction) {
-    return !!CardinalCompassDirection[direction];
-  }
-
-  static isOrdinal(direction) {
-    return !!OrdinalCompassDirection[direction];
-  }
-
-  static rotate(direction, steps) {
-    return signedModulo(direction + steps, 8);
-  }
-
-  isCardinal() {
-    return Compass.isCardinal(this.direction);
-  }
-
-  isOrdinal() {
-    return Compass.isOrdinal(this.direction);
-  }
-
-  rotate(steps) {
-    return Compass.rotate(this.direction, steps);
-  }
-
-}
-
-exports.Compass = Compass;
-Compass.N = CompassDirection.N;
-Compass.NE = CompassDirection.NE;
-Compass.E = CompassDirection.E;
-Compass.SE = CompassDirection.SE;
-Compass.S = CompassDirection.S;
-Compass.SW = CompassDirection.SW;
-Compass.W = CompassDirection.W;
-Compass.NW = CompassDirection.NW; // todo: move to utils?
-
-function signedModulo(dividend, divisor) {
-  return (dividend % divisor + divisor) % divisor;
-}
-},{}],"src/compass/index.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _compass = require("./compass");
-
-Object.keys(_compass).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _compass[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _compass[key];
-    }
-  });
-});
-},{"./compass":"src/compass/compass.ts"}],"src/grid/functions/flatTraverse.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.flatTraverse = void 0;
-
-// todo: rename?
-const flatTraverse = traversers => (cursor, getHex) => {
-  if (!Array.isArray(traversers)) {
-    return Array.from(traversers(cursor, getHex));
-  }
-
-  const nextHexes = [];
-
-  for (const traverser of traversers) {
-    for (const nextCursor of traverser(cursor, getHex)) {
-      cursor = nextCursor;
-      nextHexes.push(cursor);
-    }
-  }
-
-  return nextHexes;
-};
-
-exports.flatTraverse = flatTraverse;
-},{}],"src/grid/functions/inStore.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.inStore = void 0;
-
-const inStore = (hex, grid) => grid.store.has(hex.toString());
-
-exports.inStore = inStore;
-},{}],"src/utils/isObject.ts":[function(require,module,exports) {
+},{"./tiles":"playground/tiles.ts"}],"src/utils/isObject.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -518,6 +396,17 @@ exports.offsetFromZero = void 0;
 const offsetFromZero = (offset, distance) => distance + offset * (distance & 1) >> 1;
 
 exports.offsetFromZero = offsetFromZero;
+},{}],"src/utils/signedModulo.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.signedModulo = signedModulo;
+
+function signedModulo(dividend, divisor) {
+  return (dividend % divisor + divisor) % divisor;
+}
 },{}],"src/utils/index.ts":[function(require,module,exports) {
 "use strict";
 
@@ -602,39 +491,208 @@ Object.keys(_offsetFromZero).forEach(function (key) {
     }
   });
 });
-},{"./isAxial":"src/utils/isAxial.ts","./isFunction":"src/utils/isFunction.ts","./isObject":"src/utils/isObject.ts","./isOffset":"src/utils/isOffset.ts","./isPoint":"src/utils/isPoint.ts","./offsetFromZero":"src/utils/offsetFromZero.ts"}],"src/hex/functions/offsetToAxial.ts":[function(require,module,exports) {
+
+var _signedModulo = require("./signedModulo");
+
+Object.keys(_signedModulo).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _signedModulo[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _signedModulo[key];
+    }
+  });
+});
+},{"./isAxial":"src/utils/isAxial.ts","./isFunction":"src/utils/isFunction.ts","./isObject":"src/utils/isObject.ts","./isOffset":"src/utils/isOffset.ts","./isPoint":"src/utils/isPoint.ts","./offsetFromZero":"src/utils/offsetFromZero.ts","./signedModulo":"src/utils/signedModulo.ts"}],"src/compass/compass.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.offsetToAxial = exports.offsetToAxialFlat = exports.offsetToAxialPointy = void 0;
+exports.Compass = exports.CompassDirection = exports.OrdinalCompassDirection = exports.CardinalCompassDirection = void 0;
+
+var _utils = require("../utils");
+
+var CardinalCompassDirection;
+exports.CardinalCompassDirection = CardinalCompassDirection;
+
+(function (CardinalCompassDirection) {
+  CardinalCompassDirection[CardinalCompassDirection["N"] = 0] = "N";
+  CardinalCompassDirection[CardinalCompassDirection["E"] = 2] = "E";
+  CardinalCompassDirection[CardinalCompassDirection["S"] = 4] = "S";
+  CardinalCompassDirection[CardinalCompassDirection["W"] = 6] = "W";
+})(CardinalCompassDirection || (exports.CardinalCompassDirection = CardinalCompassDirection = {}));
+
+var OrdinalCompassDirection;
+exports.OrdinalCompassDirection = OrdinalCompassDirection;
+
+(function (OrdinalCompassDirection) {
+  OrdinalCompassDirection[OrdinalCompassDirection["NE"] = 1] = "NE";
+  OrdinalCompassDirection[OrdinalCompassDirection["SE"] = 3] = "SE";
+  OrdinalCompassDirection[OrdinalCompassDirection["SW"] = 5] = "SW";
+  OrdinalCompassDirection[OrdinalCompassDirection["NW"] = 7] = "NW";
+})(OrdinalCompassDirection || (exports.OrdinalCompassDirection = OrdinalCompassDirection = {}));
+
+var CompassDirection;
+exports.CompassDirection = CompassDirection;
+
+(function (CompassDirection) {
+  CompassDirection[CompassDirection["N"] = 0] = "N";
+  CompassDirection[CompassDirection["NE"] = 1] = "NE";
+  CompassDirection[CompassDirection["E"] = 2] = "E";
+  CompassDirection[CompassDirection["SE"] = 3] = "SE";
+  CompassDirection[CompassDirection["S"] = 4] = "S";
+  CompassDirection[CompassDirection["SW"] = 5] = "SW";
+  CompassDirection[CompassDirection["W"] = 6] = "W";
+  CompassDirection[CompassDirection["NW"] = 7] = "NW";
+})(CompassDirection || (exports.CompassDirection = CompassDirection = {}));
+
+class Compass {
+  constructor(direction = CompassDirection.N) {
+    this.direction = typeof direction === 'number' ? direction : CompassDirection[direction];
+  }
+
+  static of(direction = CompassDirection.N) {
+    return new Compass(direction);
+  }
+
+  static isCardinal(direction) {
+    return !!CardinalCompassDirection[direction];
+  }
+
+  static isOrdinal(direction) {
+    return !!OrdinalCompassDirection[direction];
+  }
+
+  static rotate(direction, steps) {
+    return (0, _utils.signedModulo)(direction + steps, 8);
+  }
+
+  isCardinal() {
+    return Compass.isCardinal(this.direction);
+  }
+
+  isOrdinal() {
+    return Compass.isOrdinal(this.direction);
+  }
+
+  rotate(steps) {
+    return Compass.rotate(this.direction, steps);
+  }
+
+}
+
+exports.Compass = Compass;
+Compass.N = CompassDirection.N;
+Compass.NE = CompassDirection.NE;
+Compass.E = CompassDirection.E;
+Compass.SE = CompassDirection.SE;
+Compass.S = CompassDirection.S;
+Compass.SW = CompassDirection.SW;
+Compass.W = CompassDirection.W;
+Compass.NW = CompassDirection.NW;
+},{"../utils":"src/utils/index.ts"}],"src/compass/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _compass = require("./compass");
+
+Object.keys(_compass).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _compass[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _compass[key];
+    }
+  });
+});
+},{"./compass":"src/compass/compass.ts"}],"src/grid/functions/flatTraverse.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.flatTraverse = void 0;
+
+const flatTraverse = traversers => (cursor, getHex) => {
+  if (!Array.isArray(traversers)) {
+    return Array.from(traversers(cursor, getHex));
+  }
+
+  const nextHexes = [];
+
+  for (const traverser of traversers) {
+    for (const nextCursor of traverser(cursor, getHex)) {
+      cursor = nextCursor;
+      nextHexes.push(cursor);
+    }
+  }
+
+  return nextHexes;
+};
+
+exports.flatTraverse = flatTraverse;
+},{}],"src/grid/functions/inStore.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.inStore = void 0;
+
+const inStore = (hex, grid) => grid.store.has(hex.toString());
+
+exports.inStore = inStore;
+},{}],"src/hex/functions/offsetToCube.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.offsetToCube = exports.offsetToCubeFlat = exports.offsetToCubePointy = void 0;
 
 var _utils = require("../../utils");
 
-const offsetToAxialPointy = (col, row, offset) => ({
-  q: col - (0, _utils.offsetFromZero)(offset, row),
-  r: row
-});
+const offsetToCubePointy = (col, row, offset) => {
+  const q = col - (0, _utils.offsetFromZero)(offset, row);
+  const r = row;
+  const s = -q - r;
+  return {
+    q,
+    r,
+    s
+  };
+};
 
-exports.offsetToAxialPointy = offsetToAxialPointy;
+exports.offsetToCubePointy = offsetToCubePointy;
 
-const offsetToAxialFlat = (col, row, offset) => ({
-  q: col,
-  r: row - (0, _utils.offsetFromZero)(offset, col)
-});
+const offsetToCubeFlat = (col, row, offset) => {
+  const q = col;
+  const r = row - (0, _utils.offsetFromZero)(offset, col);
+  const s = -q - r;
+  return {
+    q,
+    r,
+    s
+  };
+};
 
-exports.offsetToAxialFlat = offsetToAxialFlat;
+exports.offsetToCubeFlat = offsetToCubeFlat;
 
-const offsetToAxial = ({
+const offsetToCube = ({
   col,
   row
 }, {
   offset,
   isPointy
-}) => isPointy ? offsetToAxialPointy(col, row, offset) : offsetToAxialFlat(col, row, offset);
+}) => isPointy ? offsetToCubePointy(col, row, offset) : offsetToCubeFlat(col, row, offset);
 
-exports.offsetToAxial = offsetToAxial;
+exports.offsetToCube = offsetToCube;
 },{"../../utils":"src/utils/index.ts"}],"src/hex/functions/cloneHex.ts":[function(require,module,exports) {
 "use strict";
 
@@ -645,7 +703,7 @@ exports.cloneHex = void 0;
 
 var _utils = require("../../utils");
 
-var _offsetToAxial = require("./offsetToAxial");
+var _offsetToCube = require("./offsetToCube");
 
 const cloneHex = (hex, newProps = {}) => {
   if ((0, _utils.isOffset)(newProps)) {
@@ -654,7 +712,7 @@ const cloneHex = (hex, newProps = {}) => {
       row,
       ...otherProps
     } = newProps;
-    const coordinates = (0, _offsetToAxial.offsetToAxial)({
+    const coordinates = (0, _offsetToCube.offsetToCube)({
       col,
       row
     }, hex);
@@ -665,20 +723,22 @@ const cloneHex = (hex, newProps = {}) => {
 };
 
 exports.cloneHex = cloneHex;
-},{"../../utils":"src/utils/index.ts","./offsetToAxial":"src/hex/functions/offsetToAxial.ts"}],"src/hex/types.ts":[function(require,module,exports) {
+},{"../../utils":"src/utils/index.ts","./offsetToCube":"src/hex/functions/offsetToCube.ts"}],"src/hex/types.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Orientations = void 0;
+exports.Orientation = void 0;
 // todo: move types to single file in /src
 // tried it and somehow typescript can't call origin as a function anymore in createHexPrototype.ts normalizeOrigin()
-const Orientations = {
-  FLAT: 'FLAT',
-  POINTY: 'POINTY'
-};
-exports.Orientations = Orientations;
+var Orientation;
+exports.Orientation = Orientation;
+
+(function (Orientation) {
+  Orientation["FLAT"] = "FLAT";
+  Orientation["POINTY"] = "POINTY";
+})(Orientation || (exports.Orientation = Orientation = {}));
 },{}],"src/hex/functions/height.ts":[function(require,module,exports) {
 "use strict";
 
@@ -702,7 +762,7 @@ const height = ({
   dimensions: {
     yRadius
   }
-}) => orientation === _types.Orientations.POINTY ? heightPointy(yRadius) : heightFlat(yRadius);
+}) => orientation === _types.Orientation.POINTY ? heightPointy(yRadius) : heightFlat(yRadius);
 
 exports.height = height;
 },{"../types":"src/hex/types.ts"}],"src/hex/functions/hexToPoint.ts":[function(require,module,exports) {
@@ -727,7 +787,7 @@ const hexToPoint = ({
   },
   q,
   r
-}) => orientation === _types.Orientations.POINTY ? {
+}) => orientation === _types.Orientation.POINTY ? {
   x: xRadius * Math.sqrt(3) * (q + r / 2) - x,
   y: yRadius * 3 / 2 * r - y
 } : {
@@ -772,7 +832,7 @@ const width = ({
   dimensions: {
     xRadius
   }
-}) => orientation === _types.Orientations.POINTY ? widthPointy(xRadius) : widthFlat(xRadius);
+}) => orientation === _types.Orientation.POINTY ? widthPointy(xRadius) : widthFlat(xRadius);
 
 exports.width = width;
 },{"../types":"src/hex/types.ts"}],"src/hex/functions/corners.ts":[function(require,module,exports) {
@@ -853,7 +913,7 @@ function corners(hexOrHexSettings) {
     }
   } = hexOrHexSettings;
   const point = (0, _isHex.isHex)(hexOrHexSettings) ? (0, _hexToPoint.hexToPoint)(hexOrHexSettings) : hexOrHexSettings.origin;
-  return orientation === _types.Orientations.POINTY ? cornersPointy((0, _width.widthPointy)(xRadius), (0, _height.heightPointy)(yRadius), point) : cornersFlat((0, _width.widthFlat)(xRadius), (0, _height.heightFlat)(yRadius), point);
+  return orientation === _types.Orientation.POINTY ? cornersPointy((0, _width.widthPointy)(xRadius), (0, _height.heightPointy)(yRadius), point) : cornersFlat((0, _width.widthFlat)(xRadius), (0, _height.heightFlat)(yRadius), point);
 }
 },{"../types":"src/hex/types.ts","./height":"src/hex/functions/height.ts","./hexToPoint":"src/hex/functions/hexToPoint.ts","./isHex":"src/hex/functions/isHex.ts","./width":"src/hex/functions/width.ts"}],"src/hex/functions/createHex.ts":[function(require,module,exports) {
 "use strict";
@@ -867,7 +927,7 @@ var _utils = require("../../utils");
 
 var _isHex = require("./isHex");
 
-var _offsetToAxial = require("./offsetToAxial");
+var _offsetToCube = require("./offsetToCube");
 
 const createHex = (prototypeOrHex, props = {
   q: 0,
@@ -883,7 +943,7 @@ const createHex = (prototypeOrHex, props = {
       row,
       ...otherProps
     } = props;
-    const coordinates = (0, _offsetToAxial.offsetToAxial)({
+    const coordinates = (0, _offsetToCube.offsetToCube)({
       col,
       row
     }, prototypeOrHex);
@@ -894,7 +954,7 @@ const createHex = (prototypeOrHex, props = {
 };
 
 exports.createHex = createHex;
-},{"../../utils":"src/utils/index.ts","./isHex":"src/hex/functions/isHex.ts","./offsetToAxial":"src/hex/functions/offsetToAxial.ts"}],"src/hex/functions/equals.ts":[function(require,module,exports) {
+},{"../../utils":"src/utils/index.ts","./isHex":"src/hex/functions/isHex.ts","./offsetToCube":"src/hex/functions/offsetToCube.ts"}],"src/hex/functions/equals.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -961,7 +1021,7 @@ var _types = require("../types");
 
 const isFlat = ({
   orientation
-}) => orientation === _types.Orientations.FLAT;
+}) => orientation === _types.Orientation.FLAT;
 
 exports.isFlat = isFlat;
 },{"../types":"src/hex/types.ts"}],"src/hex/functions/isPointy.ts":[function(require,module,exports) {
@@ -976,7 +1036,7 @@ var _types = require("../types");
 
 const isPointy = ({
   orientation
-}) => orientation === _types.Orientations.POINTY;
+}) => orientation === _types.Orientation.POINTY;
 
 exports.isPointy = isPointy;
 },{"../types":"src/hex/types.ts"}],"src/hex/functions/toString.ts":[function(require,module,exports) {
@@ -1030,7 +1090,7 @@ const defaultHexSettings = {
     xRadius: 1,
     yRadius: 1
   },
-  orientation: _types.Orientations.POINTY,
+  orientation: _types.Orientation.POINTY,
   origin: {
     x: 0,
     y: 0
@@ -1171,7 +1231,7 @@ function normalizeDimensions(prototype) {
     } = dimensions;
 
     if (width > 0 && height > 0) {
-      return normalizeOrientation(prototype) === _types.Orientations.POINTY ? {
+      return normalizeOrientation(prototype) === _types.Orientation.POINTY ? {
         xRadius: width / Math.sqrt(3),
         yRadius: height / 2
       } : {
@@ -1194,9 +1254,9 @@ function normalizeDimensions(prototype) {
 function normalizeOrientation({
   orientation
 }) {
-  orientation = orientation;
+  orientation = orientation.toUpperCase();
 
-  if (orientation === _types.Orientations.POINTY || orientation === _types.Orientations.FLAT) {
+  if (orientation === _types.Orientation.POINTY || orientation === _types.Orientation.FLAT) {
     return orientation;
   }
 
@@ -1237,7 +1297,83 @@ function normalizeOrigin(prototype) {
 
   throw new TypeError(`Invalid origin: ${origin}. Origin must be expressed as a Point ({ x: number, y: number }), 'topLeft' or a function that returns a Point.`);
 }
-},{"../../utils":"src/utils/index.ts","../types":"src/hex/types.ts","./cloneHex":"src/hex/functions/cloneHex.ts","./corners":"src/hex/functions/corners.ts","./equals":"src/hex/functions/equals.ts","./height":"src/hex/functions/height.ts","./hexToOffset":"src/hex/functions/hexToOffset.ts","./hexToPoint":"src/hex/functions/hexToPoint.ts","./isFlat":"src/hex/functions/isFlat.ts","./isPointy":"src/hex/functions/isPointy.ts","./toString":"src/hex/functions/toString.ts","./width":"src/hex/functions/width.ts"}],"src/hex/functions/index.ts":[function(require,module,exports) {
+},{"../../utils":"src/utils/index.ts","../types":"src/hex/types.ts","./cloneHex":"src/hex/functions/cloneHex.ts","./corners":"src/hex/functions/corners.ts","./equals":"src/hex/functions/equals.ts","./height":"src/hex/functions/height.ts","./hexToOffset":"src/hex/functions/hexToOffset.ts","./hexToPoint":"src/hex/functions/hexToPoint.ts","./isFlat":"src/hex/functions/isFlat.ts","./isPointy":"src/hex/functions/isPointy.ts","./toString":"src/hex/functions/toString.ts","./width":"src/hex/functions/width.ts"}],"src/hex/functions/round.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.round = void 0;
+
+const round = ({
+  q,
+  r,
+  s = -q - r
+}) => {
+  let roundedQ = Math.round(q);
+  let roundedR = Math.round(r);
+  let roundedS = Math.round(s);
+  const diffQ = Math.abs(q - roundedQ);
+  const diffR = Math.abs(r - roundedR);
+  const diffS = Math.abs(s - roundedS);
+
+  if (diffQ > diffR && diffQ > diffS) {
+    roundedQ = -roundedR - roundedS;
+  } else if (diffR > diffS) {
+    roundedR = -roundedQ - roundedS;
+  } else {
+    roundedS = -roundedQ - roundedR;
+  }
+
+  return {
+    q: roundedQ,
+    r: roundedR,
+    s: roundedS
+  };
+};
+
+exports.round = round;
+},{}],"src/hex/functions/pointToCube.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.pointToCube = void 0;
+
+var _round = require("./round");
+
+// inspired by https://github.com/gojuno/hexgrid-py
+// and simplified by https://www.symbolab.com/solver/simplify-calculator/simplify
+const pointToCube = ({
+  x,
+  y
+}, {
+  dimensions: {
+    xRadius,
+    yRadius
+  },
+  origin,
+  isPointy
+}) => {
+  x += origin.x;
+  y += origin.y;
+
+  if (isPointy) {
+    return (0, _round.round)({
+      q: Math.sqrt(3) * x / (3 * xRadius) - y / (3 * yRadius),
+      r: 2 / 3 * (y / yRadius)
+    });
+  }
+
+  return (0, _round.round)({
+    q: 2 / 3 * (x / xRadius),
+    r: Math.sqrt(3) * y / (3 * yRadius) - x / (3 * xRadius)
+  });
+};
+
+exports.pointToCube = pointToCube;
+},{"./round":"src/hex/functions/round.ts"}],"src/hex/functions/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1387,15 +1523,41 @@ Object.keys(_isPointy).forEach(function (key) {
   });
 });
 
-var _offsetToAxial = require("./offsetToAxial");
+var _offsetToCube = require("./offsetToCube");
 
-Object.keys(_offsetToAxial).forEach(function (key) {
+Object.keys(_offsetToCube).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _offsetToAxial[key]) return;
+  if (key in exports && exports[key] === _offsetToCube[key]) return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function () {
-      return _offsetToAxial[key];
+      return _offsetToCube[key];
+    }
+  });
+});
+
+var _pointToCube = require("./pointToCube");
+
+Object.keys(_pointToCube).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _pointToCube[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _pointToCube[key];
+    }
+  });
+});
+
+var _round = require("./round");
+
+Object.keys(_round).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _round[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _round[key];
     }
   });
 });
@@ -1425,7 +1587,7 @@ Object.keys(_width).forEach(function (key) {
     }
   });
 });
-},{"./cloneHex":"src/hex/functions/cloneHex.ts","./corners":"src/hex/functions/corners.ts","./createHex":"src/hex/functions/createHex.ts","./createHexPrototype":"src/hex/functions/createHexPrototype.ts","./equals":"src/hex/functions/equals.ts","./height":"src/hex/functions/height.ts","./hexToOffset":"src/hex/functions/hexToOffset.ts","./hexToPoint":"src/hex/functions/hexToPoint.ts","./isFlat":"src/hex/functions/isFlat.ts","./isHex":"src/hex/functions/isHex.ts","./isPointy":"src/hex/functions/isPointy.ts","./offsetToAxial":"src/hex/functions/offsetToAxial.ts","./toString":"src/hex/functions/toString.ts","./width":"src/hex/functions/width.ts"}],"src/hex/index.ts":[function(require,module,exports) {
+},{"./cloneHex":"src/hex/functions/cloneHex.ts","./corners":"src/hex/functions/corners.ts","./createHex":"src/hex/functions/createHex.ts","./createHexPrototype":"src/hex/functions/createHexPrototype.ts","./equals":"src/hex/functions/equals.ts","./height":"src/hex/functions/height.ts","./hexToOffset":"src/hex/functions/hexToOffset.ts","./hexToPoint":"src/hex/functions/hexToPoint.ts","./isFlat":"src/hex/functions/isFlat.ts","./isHex":"src/hex/functions/isHex.ts","./isPointy":"src/hex/functions/isPointy.ts","./offsetToCube":"src/hex/functions/offsetToCube.ts","./pointToCube":"src/hex/functions/pointToCube.ts","./round":"src/hex/functions/round.ts","./toString":"src/hex/functions/toString.ts","./width":"src/hex/functions/width.ts"}],"src/hex/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1519,7 +1681,7 @@ const neighborOfPointy = ({
 }, direction) => {
   if (direction === _compass.CompassDirection.S || direction === _compass.CompassDirection.N) {
     const nextRow = direction === _compass.CompassDirection.S ? row + 1 : row - 1;
-    return (0, _hex.offsetToAxialPointy)(col, nextRow, offset);
+    return (0, _hex.offsetToCubePointy)(col, nextRow, offset);
   }
 
   const neighbor = DIRECTIONS_POINTY[direction];
@@ -1540,7 +1702,7 @@ const neighborOfFlat = ({
 }, direction) => {
   if (direction === _compass.CompassDirection.E || direction === _compass.CompassDirection.W) {
     const nextCol = direction === _compass.CompassDirection.E ? col + 1 : col - 1;
-    return (0, _hex.offsetToAxialFlat)(nextCol, row, offset);
+    return (0, _hex.offsetToCubeFlat)(nextCol, row, offset);
   }
 
   const neighbor = DIRECTIONS_FLAT[direction];
@@ -1623,28 +1785,16 @@ class Grid {
       return this.store.get(hex.toString()) ?? hex;
     };
 
-    this._getPrevHexState = () => ({
-      hexes: [],
-      cursor: null
-    });
+    this._getPrevHexes = () => [];
 
     if (traversersOrStore instanceof Map) {
-      this._getPrevHexState = () => {
-        const hexes = Array.from(traversersOrStore.values());
-        return {
-          hexes,
-          cursor: hexes[hexes.length - 1]
-        };
-      };
+      this._getPrevHexes = () => Array.from(traversersOrStore.values());
 
       this.store = new Map(traversersOrStore);
     } else if (traversersOrStore) {
       const hexes = (0, _functions.flatTraverse)(traversersOrStore)(this.getHex(), this.getHex);
 
-      this._getPrevHexState = () => ({
-        hexes,
-        cursor: hexes[hexes.length - 1]
-      });
+      this._getPrevHexes = () => hexes;
 
       this.store = new Map(hexes.map(hex => [hex.toString(), hex]));
     }
@@ -1674,74 +1824,55 @@ class Grid {
     return 'Grid';
   }
 
-  *[Symbol.iterator]() {
-    for (const hex of this._getPrevHexState(this).hexes) {
-      yield hex;
-    }
+  pointToHex(point) {
+    return this.getHex((0, _hex.pointToCube)(point, this.hexPrototype));
+  }
+
+  update(callback) {
+    const nextGrid = this._clone(this._getPrevHexes);
+
+    return callback(nextGrid) || nextGrid;
   }
 
   each(callback) {
     const each = currentGrid => {
-      const prevHexState = this._getPrevHexState(currentGrid);
+      const hexes = this._getPrevHexes(currentGrid);
 
-      for (const hex of prevHexState.hexes) {
-        callback(hex, currentGrid);
-      }
-
-      return prevHexState;
+      hexes.forEach(hex => callback(hex, currentGrid));
+      return hexes;
     };
 
     return this._clone(each);
   }
 
+  map(callback) {
+    const map = currentGrid => this._getPrevHexes(currentGrid).map(hex => {
+      const cursor = hex.clone();
+      return callback(cursor, currentGrid) || cursor;
+    });
+
+    return this._clone(map);
+  }
+
   filter(predicate) {
-    const filter = currentGrid => {
-      const nextHexes = [];
-
-      const prevHexState = this._getPrevHexState(currentGrid);
-
-      let cursor = prevHexState.cursor;
-
-      for (const hex of prevHexState.hexes) {
-        if (predicate(hex, currentGrid)) {
-          cursor = hex;
-          nextHexes.push(cursor);
-        }
-      }
-
-      return {
-        hexes: nextHexes,
-        cursor
-      };
-    };
+    const filter = currentGrid => this._getPrevHexes(currentGrid).filter(hex => predicate(hex, currentGrid));
 
     return this._clone(filter);
   }
 
   takeWhile(predicate) {
     const takeWhile = currentGrid => {
-      const nextHexes = [];
+      const hexes = [];
 
-      const prevHexState = this._getPrevHexState(currentGrid);
-
-      let cursor = prevHexState.cursor;
-
-      for (const hex of prevHexState.hexes) {
+      for (const hex of this._getPrevHexes(currentGrid)) {
         if (!predicate(hex, currentGrid)) {
-          return {
-            hexes: nextHexes,
-            cursor
-          };
+          return hexes;
         }
 
-        cursor = hex;
-        nextHexes.push(cursor);
+        hexes.push(hex);
       }
 
-      return {
-        hexes: nextHexes,
-        cursor
-      };
+      return hexes;
     };
 
     return this._clone(takeWhile);
@@ -1749,34 +1880,27 @@ class Grid {
 
   traverse(traversers) {
     const traverse = currentGrid => {
-      const nextHexes = [];
-      let cursor = this._getPrevHexState(currentGrid).cursor ?? this.getHex();
+      // run any previous iterators
+      this._getPrevHexes(currentGrid);
 
-      for (const nextCursor of (0, _functions.flatTraverse)(traversers)(cursor, this.getHex)) {
-        cursor = nextCursor;
-        nextHexes.push(cursor);
-      }
-
-      return {
-        hexes: nextHexes,
-        cursor
-      };
+      return (0, _functions.flatTraverse)(traversers)(this.getHex(), this.getHex);
     };
 
     return this._clone(traverse);
   }
 
-  run(callback) {
-    for (const hex of this._getPrevHexState(this).hexes) {
-      callback && callback(hex, this);
-    }
+  hexes() {
+    return this._getPrevHexes(this);
+  }
 
-    return this;
+  run(callback) {
+    this.hexes().forEach(hex => callback && callback(hex, this));
+    return this._clone(() => []);
   }
 
   _clone(getHexState) {
     const newGrid = new Grid(this.hexPrototype, this.store);
-    newGrid._getPrevHexState = getHexState;
+    newGrid._getPrevHexes = getHexState;
     return newGrid;
   }
 
@@ -1829,22 +1953,22 @@ const branch = (source, branch) => (cursor, getHex) => {
 };
 
 exports.branch = branch;
-},{"../functions":"src/grid/functions/index.ts"}],"src/grid/traversers/move.ts":[function(require,module,exports) {
+},{"../functions":"src/grid/functions/index.ts"}],"src/grid/traversers/line.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.move = void 0;
+exports.move = exports.line = void 0;
 
 var _functions = require("../functions");
 
-const move = (direction, times = 1) => {
+const line = (direction, length = 1) => {
   return (cursor, getHex) => {
     const result = [];
     let _cursor = cursor;
 
-    for (let i = 1; i <= times; i++) {
+    for (let i = 1; i <= length; i++) {
       _cursor = getHex((0, _functions.neighborOf)(_cursor, direction));
       result.push(_cursor);
     }
@@ -1853,6 +1977,8 @@ const move = (direction, times = 1) => {
   };
 };
 
+exports.line = line;
+const move = line;
 exports.move = move;
 },{"../functions":"src/grid/functions/index.ts"}],"src/grid/traversers/rectangle.ts":[function(require,module,exports) {
 "use strict";
@@ -1872,7 +1998,7 @@ var _at = require("./at");
 
 var _branch = require("./branch");
 
-var _move = require("./move");
+var _line = require("./line");
 
 function rectangle(optionsOrCornerA, cornerB) {
   return (cursor, getHex) => {
@@ -1885,7 +2011,7 @@ function rectangle(optionsOrCornerA, cornerB) {
       },
       direction = _compass.CompassDirection.E
     } = cornerB ? optionsFromOpposingCorners(optionsOrCornerA, cornerB, cursor.isPointy, cursor.offset) : optionsOrCornerA;
-    return (0, _branch.branch)([(0, _at.at)(start), (0, _move.move)(_compass.Compass.rotate(direction, 2), height - 1)], (0, _move.move)(direction, width - 1))(cursor, getHex);
+    return (0, _branch.branch)([(0, _at.at)(start), (0, _line.line)(_compass.Compass.rotate(direction, 2), height - 1)], (0, _line.line)(direction, width - 1))(cursor, getHex);
   };
 }
 
@@ -1996,7 +2122,7 @@ const RULES_FOR_SMALLEST_COL_ROW = {
 //   }
 //   return result
 // }
-},{"../../compass":"src/compass/index.ts","../../hex":"src/hex/index.ts","../../utils":"src/utils/index.ts","./at":"src/grid/traversers/at.ts","./branch":"src/grid/traversers/branch.ts","./move":"src/grid/traversers/move.ts"}],"src/grid/traversers/index.ts":[function(require,module,exports) {
+},{"../../compass":"src/compass/index.ts","../../hex":"src/hex/index.ts","../../utils":"src/utils/index.ts","./at":"src/grid/traversers/at.ts","./branch":"src/grid/traversers/branch.ts","./line":"src/grid/traversers/line.ts"}],"src/grid/traversers/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2029,15 +2155,15 @@ Object.keys(_branch).forEach(function (key) {
   });
 });
 
-var _move = require("./move");
+var _line = require("./line");
 
-Object.keys(_move).forEach(function (key) {
+Object.keys(_line).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _move[key]) return;
+  if (key in exports && exports[key] === _line[key]) return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function () {
-      return _move[key];
+      return _line[key];
     }
   });
 });
@@ -2054,7 +2180,7 @@ Object.keys(_rectangle).forEach(function (key) {
     }
   });
 });
-},{"./at":"src/grid/traversers/at.ts","./branch":"src/grid/traversers/branch.ts","./move":"src/grid/traversers/move.ts","./rectangle":"src/grid/traversers/rectangle.ts"}],"src/grid/types.ts":[function(require,module,exports) {
+},{"./at":"src/grid/traversers/at.ts","./branch":"src/grid/traversers/branch.ts","./line":"src/grid/traversers/line.ts","./rectangle":"src/grid/traversers/rectangle.ts"}],"src/grid/types.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2163,7 +2289,35 @@ Object.keys(_hex).forEach(function (key) {
     }
   });
 });
-},{"./compass":"src/compass/index.ts","./grid":"src/grid/index.ts","./hex":"src/hex/index.ts"}],"playground/index.ts":[function(require,module,exports) {
+},{"./compass":"src/compass/index.ts","./grid":"src/grid/index.ts","./hex":"src/hex/index.ts"}],"playground/player.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Player = void 0;
+
+var _tiles = require("./tiles");
+
+const ALL_HINTS = [//  on forest or desert
+{
+  isPossibleOnHex: (grid, hex, hints) => {
+    return [_tiles.F, _tiles.D].includes(hex.terrain);
+  }
+}].map(hint => ({ ...hint,
+  isActive: true
+}));
+
+class Player {
+  constructor() {
+    this.hints = ALL_HINTS.map(hint => ({ ...hint
+    }));
+  }
+
+}
+
+exports.Player = Player;
+},{"./tiles":"playground/tiles.ts"}],"playground/index.ts":[function(require,module,exports) {
 "use strict";
 
 var _render = require("./render");
@@ -2172,78 +2326,70 @@ var _tiles = require("./tiles");
 
 var _src = require("../src");
 
+var _player = require("./player");
+
 var _document$querySelect;
 
+console.log(new Date());
 const hexPrototype = (0, _src.createHexPrototype)({
   dimensions: {
     width: 60,
     height: 51.96
   },
-  orientation: 'FLAT',
-  origin: 'topLeft'
+  orientation: 'flat',
+  origin: 'topLeft',
+  terrain: 'unknown',
+  isActive: false
 });
-const grid = new _src.Grid(hexPrototype, (0, _src.rectangle)({
+let grid = new _src.Grid(hexPrototype, (0, _src.rectangle)({
   width: 12,
   height: 9
-})); // .traverse([at({ q: 0, r: 0 }), move(Compass.SE), move(Compass.NE)])
+})).each(h => {
+  h.terrain = 'unknown';
+  h.isActive = false;
+});
+grid.run(); // .traverse([at({ q: 0, r: 0 }), move(Compass.SE), move(Compass.NE)])
 // .filter(inStore)
 // .each(render)
 // .run()
-// console.log(grid.store)
 
-const tilesToArray = tilesOrder => {
-  const tilesIndex = [];
-  const tiles = [];
-  tilesOrder.forEach(tile => {
-    const tileIndex = Number(tile[0]) - 1; // convert to zero-based index
+let selectedHex = '0,0';
+let numberOfPlayers = document.querySelector('#number-of-players').value;
+const players = [];
 
-    tilesIndex.push(tileIndex);
-    const isFlipped = !!tile[1];
-    tiles.push(isFlipped ? [..._tiles.TILES[tileIndex]].reverse() : _tiles.TILES[tileIndex]);
-  });
-  const result = [];
+for (let i = 0; i < numberOfPlayers.length; i++) {
+  players.push(new _player.Player());
+}
 
-  for (let pair = 0; pair < 3; pair++) {
-    for (let j = 0; j < 3; j++) {
-      for (let coordinate = 0; coordinate < 6; coordinate++) {
-        const leftTiles = tiles[tilesIndex[pair * 2]];
-        result.push(leftTiles[j * 6 + coordinate]);
-      }
-
-      for (let coordinate = 0; coordinate < 6; coordinate++) {
-        const rightTiles = tiles[tilesIndex[pair * 2 + 1]];
-        result.push(rightTiles[j * 6 + coordinate]);
-      }
-    }
-  }
-
-  return result;
+const renderTiles = hexagonsOrdered => {
+  (0, _render.renderAll)(hexagonsOrdered);
+  (0, _render.highlightSelectedHex)(grid.store.get(selectedHex));
 };
 
-let qnr = '0,0';
-
-const renderTiles = tilesOrder => {
-  const hexagonsOrdered = [];
-  const tilesInArray = tilesToArray(tilesOrder); // grid.each(render)
-
-  let index = 0;
-  grid.each((hex, grid) => {
-    hex.terrain = tilesInArray[index];
-    hexagonsOrdered.push(hex); // grid.store.set(`${hex.q},${hex.r}`, hex)
-    // console.log('tilesInArray[' + index + ']:', tilesInArray[index])
-
-    index++; // render(hex)
-  }).run();
-  (0, _render.renderAll)(hexagonsOrdered);
-  (0, _render.highlightSelectedHex)(grid.store.get(qnr));
+const setIsActive = hexagonsOrdered => {
+  hexagonsOrdered.forEach(hex => {
+    const player = players[0];
+    hex.isActive = false;
+    player.hints.forEach(hint => hex.isActive || (hex.isActive = hint.isPossibleOnHex(grid, hex, player.hints)));
+  });
 };
 
 const gatherAndRender = () => {
+  numberOfPlayers = document.querySelector('#number-of-players').value;
   const values = [];
   const forEach = Array.prototype.forEach;
   forEach.call(document.querySelectorAll('.js-tilesPosition'), (el, i) => values.push(el.value || i + 1));
   forEach.call(document.querySelectorAll('.js-tilesPositionCheckbox'), (el, i) => values[i] += el.checked ? 'r' : '');
-  renderTiles(values);
+  const hexagonsOrdered = [];
+  const tilesInArray = (0, _tiles.tilesToArray)(values);
+  let index = 0;
+  grid = grid.each(hex => {
+    hex.terrain = tilesInArray[index++];
+    hexagonsOrdered.push(hex);
+  });
+  grid.run();
+  setIsActive(hexagonsOrdered);
+  renderTiles(hexagonsOrdered);
 };
 
 document.querySelectorAll('.js-tilesPosition').forEach(el => el.addEventListener('input', gatherAndRender));
@@ -2252,18 +2398,18 @@ document.addEventListener('click', e => {
   const clickEl = e.target;
   const hexEl = clickEl && clickEl.closest('[data-hex]');
   if (!hexEl) return;
-  qnr = hexEl.dataset.hex || '0,0';
-  (0, _render.highlightSelectedHex)(grid.store.get(qnr));
+  selectedHex = hexEl.dataset.hex || '0,0';
+  (0, _render.highlightSelectedHex)(grid.store.get(selectedHex));
 });
-gatherAndRender();
 (_document$querySelect = document.querySelector('.js-submit')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', () => {
   const gameplayEl = document.getElementById('gameplay');
   const player = document.querySelector('select[name="player"]').value;
   const habitat = document.querySelector('input[name="habitat"]');
-  gameplayEl.value += `${player} ${qnr} ${habitat.checked ? '✅' : '⛔️'}\n`;
+  gameplayEl.value += `${player} ${selectedHex} ${habitat.checked ? '✅' : '⛔️'}\n`;
   gameplayEl.scrollTop = gameplayEl.scrollHeight;
 });
-},{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+gatherAndRender();
+},{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts","./player":"playground/player.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2291,7 +2437,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54140" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51762" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

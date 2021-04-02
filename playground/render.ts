@@ -20,15 +20,15 @@ export const renderAll = (hexes: HexWithTerrain[]) => {
 
 const fillHexagon = (hex: HexWithTerrain) => {
   let fill = 'none'
-  if (hex.terrain?.includes(F)) {
+  if (hex.terrain.includes(F)) {
     fill = '#009900'
-  } else if (hex.terrain?.includes(W)) {
+  } else if (hex.terrain.includes(W)) {
     fill = '#2596be'
-  } else if (hex.terrain?.includes(D)) {
+  } else if (hex.terrain.includes(D)) {
     fill = '#ffcc00'
-  } else if (hex.terrain?.includes(M)) {
+  } else if (hex.terrain.includes(M)) {
     fill = 'gray'
-  } else if (hex.terrain?.includes(S)) {
+  } else if (hex.terrain.includes(S)) {
     fill = 'purple'
   }
   // const polygon = draw.polygon(hex.corners.map(({ x, y }) => `${x},${y}`)).fill(fill)
@@ -40,17 +40,17 @@ const fillHexagon = (hex: HexWithTerrain) => {
   `
 }
 
-export type HexWithTerrain = Hex & { terrain?: string }
+export type HexWithTerrain = Hex & { terrain: string; isActive: boolean }
 
 const BORDER_DISTANCE = 3
 const DX = [-0.75, -1, -0.75, 0.75, 1, 0.75]
 const DY = [0.75, 0, -0.75, -0.75, 0, 0.75]
 const addBearsAndCougars = (hex: HexWithTerrain) => {
-  if (!hex.terrain?.includes('bears') && !hex.terrain?.includes('cougars')) {
+  if (!hex.terrain.includes('bears') && !hex.terrain.includes('cougars')) {
     return ''
   }
 
-  const color = hex.terrain?.includes('bears') ? '#000' : '#b00'
+  const color = hex.terrain.includes('bears') ? '#000' : '#b00'
 
   return `
     <polygon points='${hex.corners.map(({ x, y }, i) => {
@@ -87,7 +87,7 @@ export const highlightSelectedHex = (hex?: Hex) => {
   const graphicsEl = mapWrapperEl.querySelector(`g[data-hex="${hex.q},${hex.r}"]`)
   if (!graphicsEl) return ''
 
-  const oldHighlightedEl = mapWrapperEl.querySelector('[highlighted]')
+  const oldHighlightedEl = mapWrapperEl.querySelector('polygon[highlighted]')
   oldHighlightedEl && oldHighlightedEl.remove()
 
   graphicsEl.innerHTML += `
@@ -105,5 +105,5 @@ export const render = (hex: HexWithTerrain): string => {
   result += addBearsAndCougars(hex)
   result += addCoordinates(hex)
   result += highlightSelectedHex(hex)
-  return `<g data-hex='${hex.q},${hex.r}'>${result}</g>`
+  return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive ? '1' : '0.5'}'>${result}</g>`
 }

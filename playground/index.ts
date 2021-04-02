@@ -1,82 +1,69 @@
 import { HexWithTerrain, highlightSelectedHex, renderAll } from './render'
-import { TILES } from './tiles'
-import { createHexPrototype, Grid, Hex, rectangle } from '../src'
+import { tilesToArray } from './tiles'
+import { createHexPrototype, Grid, rectangle } from '../src'
+import { Player } from './player'
 
-interface CustomHex extends Hex {
-  terrain: string
-}
+console.log(new Date())
 
-const hexPrototype = createHexPrototype<CustomHex>({
+const hexPrototype = createHexPrototype<HexWithTerrain>({
   dimensions: { width: 60, height: 51.96 },
   orientation: 'flat',
   origin: 'topLeft',
+  terrain: 'unknown',
+  isActive: false,
 })
 
-const grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 }))
+let grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 })).each((h) => {
+  h.terrain = 'unknown'
+  h.isActive = false
+})
+grid.run()
 // .traverse([at({ q: 0, r: 0 }), move(Compass.SE), move(Compass.NE)])
 // .filter(inStore)
 // .each(render)
 // .run()
-// console.log(grid.store)
 
-const tilesToArray = (tilesOrder: string[]) => {
-  const tilesIndex: number[] = []
+let selectedHex = '0,0'
+let numberOfPlayers = (document.querySelector('#number-of-players') as HTMLInputElement).value
 
-  const tiles: string[][] = []
-  tilesOrder.forEach((tile) => {
-    const tileIndex = Number(tile[0]) - 1 // convert to zero-based index
-    tilesIndex.push(tileIndex)
-
-    const isFlipped = !!tile[1]
-    tiles.push(isFlipped ? [...TILES[tileIndex]].reverse() : TILES[tileIndex])
-  })
-
-  const result = []
-
-  for (let pair = 0; pair < 3; pair++) {
-    for (let j = 0; j < 3; j++) {
-      for (let coordinate = 0; coordinate < 6; coordinate++) {
-        const leftTiles = tiles[tilesIndex[pair * 2]]
-        result.push(leftTiles[j * 6 + coordinate])
-      }
-      for (let coordinate = 0; coordinate < 6; coordinate++) {
-        const rightTiles = tiles[tilesIndex[pair * 2 + 1]]
-        result.push(rightTiles[j * 6 + coordinate])
-      }
-    }
-  }
-
-  return result
+const players: Player[] = []
+for (let i = 0; i < numberOfPlayers.length; i++) {
+  players.push(new Player())
 }
 
-let qnr = '0,0'
-
-const renderTiles = (tilesOrder: string[]) => {
-  const hexagonsOrdered: HexWithTerrain[] = []
-  const tilesInArray = tilesToArray(tilesOrder)
-
-  // grid.each(render)
-  let index = 0
-  grid
-    .each((hex, grid) => {
-      hex.terrain = tilesInArray[index]
-      hexagonsOrdered.push(hex)
-      // grid.store.set(`${hex.q},${hex.r}`, hex)
-      // console.log('tilesInArray[' + index + ']:', tilesInArray[index])
-      index++
-      // render(hex)
-    })
-    .run()
+const renderTiles = (hexagonsOrdered: HexWithTerrain[]) => {
   renderAll(hexagonsOrdered)
-  highlightSelectedHex(grid.store.get(qnr))
+  highlightSelectedHex(grid.store.get(selectedHex))
+}
+
+const setIsActive = (hexagonsOrdered: HexWithTerrain[]) => {
+  hexagonsOrdered.forEach((hex) => {
+    const player = players[0]
+    hex.isActive = false
+    player.hints.forEach((hint) => (hex.isActive ||= hint.isPossibleOnHex(grid, hex, player.hints)))
+  })
 }
 
 const gatherAndRender = () => {
+  numberOfPlayers = (document.querySelector('#number-of-players') as HTMLInputElement).value
+
   const values: string[] = []
   const forEach = Array.prototype.forEach
   forEach.call(document.querySelectorAll('.js-tilesPosition'), (el, i) => values.push(el.value || i + 1))
   forEach.call(document.querySelectorAll('.js-tilesPositionCheckbox'), (el, i) => (values[i] += el.checked ? 'r' : ''))
-  renderTiles(values)
+
+  const hexagonsOrdered: HexWithTerrain[] = []
+  const tilesInArray = tilesToArray(values)
+
+  let index = 0
+  grid = grid.each((hex) => {
+    hex.terrain = tilesInArray[index++]
+    hexagonsOrdered.push(hex)
+  })
+  grid.run()
+
+  setIsActive(hexagonsOrdered)
+  renderTiles(hexagonsOrdered)
 }
 
 document.querySelectorAll('.js-tilesPosition').forEach((el) => el.addEventListener('input', gatherAndRender))
@@ -87,16 +74,16 @@ document.addEventListener('click', (e) => {
   const hexEl = (clickEl && clickEl.closest('[data-hex]')) as HTMLElement
   if (!hexEl) return
 
-  qnr = hexEl.dataset.hex || '0,0'
-  highlightSelectedHex(grid.store.get(qnr))
+  selectedHex = hexEl.dataset.hex || '0,0'
+  highlightSelectedHex(grid.store.get(selectedHex))
 })
-
-gatherAndRender()
 
 document.querySelector('.js-submit')?.addEventListener('click', () => {
   const gameplayEl = document.getElementById('gameplay')! as HTMLInputElement
   const player = (document.querySelector('select[name="player"]')! as HTMLInputElement).value
   const habitat = document.querySelector('input[name="habitat"]')! as HTMLInputElement
-  gameplayEl.value += `${player} ${qnr} ${habitat.checked ? '✅' : '⛔️'}\n`
+  gameplayEl.value += `${player} ${selectedHex} ${habitat.checked ? '✅' : '⛔️'}\n`
   gameplayEl.scrollTop = gameplayEl.scrollHeight
 })
+
+gatherAndRender()
