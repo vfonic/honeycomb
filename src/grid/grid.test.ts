@@ -1,7 +1,8 @@
 import { cloneHex, createHex, createHexPrototype, Hex, toString } from '../hex'
 import { Grid } from './grid'
-import { at } from './traversers'
+import { at, rectangle } from './traversers'
 import { Traverser } from './types'
+import { HexWithTerrain } from '../../playground/render'
 
 const hexPrototype = createHexPrototype()
 
@@ -286,6 +287,82 @@ describe('map()', () => {
 })
 
 describe('filter()', () => {
+  it('fits', () => {
+    const hexPrototype = createHexPrototype<HexWithTerrain>({
+      dimensions: { width: 60, height: 51.96 },
+      orientation: 'flat',
+      origin: 'topLeft',
+    })
+
+    let grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 }))
+    grid.run()
+
+    const hex_0_0 = grid.store.get('0,0')!
+    const hexesInRange = grid.hexesInRange(hex_0_0, 1)
+    const hexCoordinates = hexesInRange.map((hex) => hex!.toString()).sort()
+
+    const expected = ['0,0', '0,1', '1,0'].sort()
+
+    expect(hexCoordinates).toEqual(expected)
+  })
+
+  it('fits', () => {
+    const hexPrototype = createHexPrototype<HexWithTerrain>({
+      dimensions: { width: 60, height: 51.96 },
+      orientation: 'flat',
+      origin: 'topLeft',
+    })
+
+    let grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 }))
+    grid.run()
+
+    const hex_0_0 = grid.store.get('1,0')!
+    const hexesInRange = grid.hexesInRange(hex_0_0, 1)
+    const hexCoordinates = hexesInRange.map((hex) => hex!.toString()).sort()
+
+    const expected = ['0,0', '0,1', '1,0', '1,1', '2,-1', '2,0'].sort()
+
+    expect(hexCoordinates).toEqual(expected)
+  })
+
+  it('fits', () => {
+    const hexPrototype = createHexPrototype<HexWithTerrain>({
+      dimensions: { width: 60, height: 51.96 },
+      orientation: 'flat',
+      origin: 'topLeft',
+    })
+
+    let grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 }))
+    grid.run()
+
+    const hex_0_0 = grid.store.get('2,3')!
+    const hexesInRange = grid.hexesInRange(hex_0_0, 1)
+    const hexCoordinates = hexesInRange.map((hex) => hex!.toString()).sort()
+
+    const expected = ['1,3', '1,4', '2,2', '2,3', '2,4', '3,2', '3,3'].sort()
+
+    expect(hexCoordinates).toEqual(expected)
+  })
+
+  it('fits', () => {
+    const hexPrototype = createHexPrototype<HexWithTerrain>({
+      dimensions: { width: 60, height: 51.96 },
+      orientation: 'flat',
+      origin: 'topLeft',
+    })
+
+    let grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 }))
+    grid.run()
+
+    const hex_0_0 = grid.store.get('3,7')!
+    const hexesInRange = grid.hexesInRange(hex_0_0, 2)
+    const hexCoordinates = hexesInRange.map((hex) => hex!.toString()).sort()
+
+    const expected = ['1,7', '1,8', '2,6', '2,7', '3,5', '3,6', '3,7', '4,5', '4,6', '5,5', '5,6'].sort()
+
+    expect(hexCoordinates).toEqual(expected)
+  })
+
   test('returns a new grid', () => {
     const grid = new Grid(hexPrototype)
     const result = grid.filter(jest.fn())
@@ -350,6 +427,7 @@ describe('traverse()', () => {
       yield createHex(hexPrototype, { q: 1, r: 2 })
       yield createHex(hexPrototype, { q: 3, r: 4 })
     }
+
     const grid = new Grid(hexPrototype).traverse(traverser)
 
     expect(grid.hexes()).toEqual([createHex(hexPrototype, { q: 1, r: 2 }), createHex(hexPrototype, { q: 3, r: 4 })])

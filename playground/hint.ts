@@ -22,126 +22,161 @@ const ON_SWAMP_OR_MOUNTAIN = 9
 
 export const ALL_HINTS = [
   {
-    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-      return hex.terrain.isForest() || hex.terrain.isDesert()
-      // if (hints[ON_WATER_OR_SWAMP].isActive) return false
-      // if (hints[ON_WATER_OR_MOUNTAIN].isActive) return false
-      // if (hints[ON_SWAMP_OR_MOUNTAIN].isActive) return false
-      // return hex.isActive
-    },
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean =>
+      hex.terrain.isForest() || hex.terrain.isDesert(),
     name: 'on forest or desert',
-    // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => {
-    //   const isPossibleOnHex = hint.isPossibleOnHex(grid, hex)
-    //   if (isPossibleOnHex != isHabitat) {
-    //     hint.isActive = false
-    //   }
-    // },
   },
   {
-    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-      return hex.terrain.isForest() || hex.terrain.isWater()
-      // if (hints[ON_DESERT_OR_SWAMP].isActive) return false
-      // if (hints[ON_DESERT_OR_MOUNTAIN].isActive) return false
-      // if (hints[ON_SWAMP_OR_MOUNTAIN].isActive) return false
-      // return hex.isActive
-    },
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean =>
+      hex.terrain.isForest() || hex.terrain.isWater(),
     name: 'on forest or water',
-    // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
   },
   {
-    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-      return hex.terrain.isForest() || hex.terrain.isSwamp()
-      // if (hints[ON_DESERT_OR_WATER].isActive) return false
-      // if (hints[ON_DESERT_OR_MOUNTAIN].isActive) return false
-      // if (hints[ON_WATER_OR_MOUNTAIN].isActive) return false
-      // return hex.isActive
-    },
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean =>
+      hex.terrain.isForest() || hex.terrain.isSwamp(),
     name: 'on forest or swamp',
-    // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
   },
   {
-    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-      return hex.terrain.isForest() || hex.terrain.isMountain()
-      // if (hints[ON_DESERT_OR_WATER].isActive) return false
-      // if (hints[ON_DESERT_OR_SWAMP].isActive) return false
-      // if (hints[ON_WATER_OR_SWAMP].isActive) return false
-      // return hex.isActive
-    },
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean =>
+      hex.terrain.isForest() || hex.terrain.isMountain(),
     name: 'on forest or mountain',
-    // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
   },
   {
-    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-      return hex.terrain.isDesert() || hex.terrain.isWater()
-      // if (hints[ON_FOREST_OR_SWAMP].isActive) return false
-      // if (hints[ON_FOREST_OR_MOUNTAIN].isActive) return false
-      // if (hints[ON_SWAMP_OR_MOUNTAIN].isActive) return false
-      // return hex.isActive
-    },
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean =>
+      hex.terrain.isDesert() || hex.terrain.isWater(),
     name: 'on desert or water',
-    // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
   },
   {
-    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-      return hex.terrain.isDesert() || hex.terrain.isSwamp()
-      // if (hints[ON_FOREST_OR_WATER].isActive) return false
-      // if (hints[ON_FOREST_OR_MOUNTAIN].isActive) return false
-      // if (hints[ON_WATER_OR_MOUNTAIN].isActive) return false
-      // return hex.isActive
-    },
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean =>
+      hex.terrain.isDesert() || hex.terrain.isSwamp(),
     name: 'on desert or swamp',
-    // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
   },
   {
-    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-      return hex.terrain.isDesert() || hex.terrain.isMountain()
-      // if (hints[ON_FOREST_OR_WATER].isActive) return false
-      // if (hints[ON_FOREST_OR_SWAMP].isActive) return false
-      // if (hints[ON_WATER_OR_SWAMP].isActive) return false
-      // return hex.isActive
-    },
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean =>
+      hex.terrain.isDesert() || hex.terrain.isMountain(),
     name: 'on desert or mountain',
-    // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
   },
   {
-    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-      return hex.terrain.isWater() || hex.terrain.isSwamp()
-      // if (hints[ON_FOREST_OR_DESERT].isActive) return false
-      // if (hints[ON_FOREST_OR_MOUNTAIN].isActive) return false
-      // if (hints[ON_DESERT_OR_MOUNTAIN].isActive) return false
-      // return hex.isActive
-    },
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean =>
+      hex.terrain.isWater() || hex.terrain.isSwamp(),
     name: 'on water or swamp',
-    // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
   },
   {
-    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-      return hex.terrain.isWater() || hex.terrain.isMountain()
-      // if (hints[ON_FOREST_OR_DESERT].isActive) return false
-      // if (hints[ON_FOREST_OR_SWAMP].isActive) return false
-      // if (hints[ON_DESERT_OR_SWAMP].isActive) return false
-      // return hex.isActive
-    },
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean =>
+      hex.terrain.isWater() || hex.terrain.isMountain(),
     name: 'on water or mountain',
-    // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+  },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean =>
+      hex.terrain.isSwamp() || hex.terrain.isMountain(),
+    name: 'on swamp or mountain',
+  },
+
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 1)
+      return hexes.some((hex) => hex.terrain.isForest())
+    },
+    name: 'within one space of forest',
   },
   {
     isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-      return hex.terrain.isSwamp() || hex.terrain.isMountain()
-      // if (hints[ON_FOREST_OR_DESERT].isActive) return false
-      // if (hints[ON_FOREST_OR_WATER].isActive) return false
-      // if (hints[ON_DESERT_OR_WATER].isActive) return false
-      // return hex.isActive
+      const hexes = grid.hexesInRange(hex, 1)
+      return hexes.some((hex) => hex.terrain.isDesert())
     },
-    name: 'on swamp or mountain',
-    // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+    name: 'within one space of desert',
   },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 1)
+      return hexes.some((hex) => hex.terrain.isSwamp())
+    },
+    name: 'within one space of swamp',
+  },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 1)
+      return hexes.some((hex) => hex.terrain.isMountain())
+    },
+    name: 'within one space of mountain',
+  },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 1)
+      return hexes.some((hex) => hex.terrain.isWater())
+    },
+    name: 'within one space of water',
+  },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 1)
+      return hexes.some((hex) => hex.terrain.hasBears() || hex.terrain.hasCougars())
+    },
+    name: 'within one space of either animal territory',
+  },
+
+  // {
+  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+  //     const hexes = grid.hexesInRange(hex, 1)
+  //     return hexes.some((hex) => hex.terrain.hasBears() || hex.terrain.hasCougars())
+  //   },
+  //   name: 'within two spaces of a standing stone',
+  // },
+  // {
+  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+  //     const hexes = grid.hexesInRange(hex, 1)
+  //     return hexes.some((hex) => hex.terrain.hasBears() || hex.terrain.hasCougars())
+  //   },
+  //   name: 'within two spaces of an abandoned shack',
+  // },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 2)
+      return hexes.some((hex) => hex.terrain.hasBears())
+    },
+    name: 'within two spaces of bear territory',
+  },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 2)
+      return hexes.some((hex) => hex.terrain.hasCougars())
+    },
+    name: 'within two spaces of cougar territory',
+  },
+
+  // {
+  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+  //     const hexes = grid.hexesInRange(hex, 3)
+  //     return hexes.some((hex) => hex.terrain.hasCougars())
+  //   },
+  //   name: 'within three spaces of a blue structure',
+  // },
+  // {
+  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+  //     const hexes = grid.hexesInRange(hex, 3)
+  //     return hexes.some((hex) => hex.terrain.hasCougars())
+  //   },
+  //   name: 'within three spaces of a white structure',
+  // },
+  // {
+  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+  //     const hexes = grid.hexesInRange(hex, 3)
+  //     return hexes.some((hex) => hex.terrain.hasCougars())
+  //   },
+  //   name: 'within three spaces of a green structure',
+  // },
+  // {
+  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+  //     const hexes = grid.hexesInRange(hex, 3)
+  //     return hexes.some((hex) => hex.terrain.hasCougars())
+  //   },
+  //   name: 'within three spaces of a black structure',
+  // },
 ]
 
 export type HintParams = {
   name: string
   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain) => boolean
-  // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null
 }
 
 export class Hint {
@@ -149,18 +184,11 @@ export class Hint {
   name: string
   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain) => boolean
 
-  // evaluateCb: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null
-
   constructor(params: HintParams) {
     this.isPossibleOnHex = params.isPossibleOnHex
     this.isActive = true
     this.name = params.name
-    // this.evaluateCb = params.evaluate
   }
-
-  // evaluate(grid: Grid<HexWithTerrain>, hex: HexWithTerrain, isHabitat: boolean) {
-  //   return this.evaluateCb(grid, this, hex, isHabitat)
-  // }
 
   evaluate(grid: Grid<HexWithTerrain>, hex: HexWithTerrain, isHabitat: boolean) {
     const isPossibleOnHex = this.isPossibleOnHex(grid, hex)

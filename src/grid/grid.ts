@@ -1,6 +1,7 @@
 import { createHex, Hex, HexCoordinates, Point, pointToCube } from '../hex'
 import { flatTraverse } from './functions'
 import { Callback, Traverser } from './types'
+import { HexWithTerrain } from '../../playground/render'
 
 export class Grid<T extends Hex> {
   static from<T extends Hex>(iterable: Map<string, T> | Iterable<T>) {
@@ -68,6 +69,107 @@ export class Grid<T extends Hex> {
     }
 
     return this._clone(each)
+  }
+
+  /**
+   * @memberof Grid#
+   * @instance
+   * @see {@link https://www.redblobgames.com/grids/hexagons/#range-coordinate|redblobgames.com}
+   *
+   * @param {hex} centerHex                   A hex to get surrounding hexes from.
+   * @param {number} [range=0]                The range (in hexes) surrounding the center hex.
+   * @param {boolean} [includeCenterHex=true] Whether to include the center hex in the result
+   *
+   * @returns {hex[]}             An array with all hexes surrounding the passed center hex.
+   *                              Only hexes that are present in the grid are returned.
+   *
+   * @throws {Error} When no valid hex is passed.
+   *
+   * @example
+   * const Hex = Honeycomb.extendHex({ orientation: 'pointy' })
+   * const Grid = Honeycomb.defineGrid(Hex)
+   * const grid = Grid.rectangle({ width: 5, height: 5 })
+   *
+   * grid.hexesInRange(Hex(2, 2), 2)          // [
+   *                                          //    { x: 0, y: 2 },
+   *                                          //    { x: 0, y: 3 },
+   *                                          //    { x: 1, y: 4 },
+   *                                          //    ...
+   *                                          //    { x: 3, y: 0 },
+   *                                          //    { x: 3, y: 1 },
+   *                                          //    { x: 4, y: 2 }
+   *                                          // ]
+   *
+   * // only returns hexes that exist in the grid:
+   * grid.hexesInRange(Hex(0, 0), 1)          // [
+   *                                          //    { x: 0, y: 0 },
+   *                                          //    { x: 0, y: 1 },
+   *                                          //    { x: 1, y: 0 }
+   *                                          // ]
+   *
+   * // exclude center hex:
+   * grid.hexesInRange(Hex(2, 2), 1, false)   // [
+   *                                          //    { x: 1, y: 2 },
+   *                                          //    { x: 1, y: 3 },
+   *                                          //    { x: 1, y: 1 },
+   *                                          //    { x: 2, y: 3 },
+   *                                          //    { x: 3, y: 2 }
+   *                                          // ]
+   */
+  hexesInRange(centerHex: HexWithTerrain, range = 0): HexWithTerrain[] {
+    if (!this.store.get(centerHex.toString())) {
+      throw new Error(`Center hex with coordinates ${centerHex} not present in grid.`)
+    }
+
+    const hexes: HexWithTerrain[] = []
+
+    // const coordinates = []
+
+    // const DIRECTIONS_FLAT = [
+    //   // 2,3
+    //   { q: 0, r: -1 }, // N // 2,2
+    //   { q: 1, r: -1 }, // NE // 3,2
+    //   null, // ambiguous
+    //   { q: 1, r: 0 }, // SE // 3,3
+    //   { q: 0, r: 1 }, // S // 2,4
+    //   { q: -1, r: 1 }, // SW // 1,4
+    //   null, // ambiguous
+    //   { q: -1, r: 0 }, // NW // 1,3
+    // ]
+
+    // 2,3
+    //
+    // 1,3
+    // 1,4
+    // 2,2
+    // 2,3
+    // 2,4
+    // 3,2
+    // 3,3
+
+    for (let q = -range; q <= range; q++) {
+      for (let r = Math.max(-range, -q - range); r <= Math.min(range, -q + range); r++) {
+        // const offsetCoordinates = hexToOffset({
+        //   q: centerHex.q + q,
+        //   r: centerHex.r + r,
+        //   offset: centerHex.offset,
+        //   isPointy: centerHex.isPointy,
+        // })
+        // const coordinate = `${offsetCoordinates.col},${offsetCoordinates.row}`
+        const coordinate = `${centerHex.q + q},${centerHex.r + r}`
+        // if (coordinate === '2,1') {
+        //   console.log({ q, r })
+        // }
+        // coordinates.push(coordinate)
+        // coordinates.push(`${q},${r}`)
+        const hex = (this.store.get(coordinate) as unknown) as HexWithTerrain
+        hexes.push(hex)
+      }
+    }
+
+    // console.log(coordinates)
+
+    return hexes.filter(Boolean)
   }
 
   map(callback: Callback<T, T | void>) {

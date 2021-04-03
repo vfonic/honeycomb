@@ -1841,6 +1841,103 @@ class Grid {
 
     return this._clone(each);
   }
+  /**
+   * @memberof Grid#
+   * @instance
+   * @see {@link https://www.redblobgames.com/grids/hexagons/#range-coordinate|redblobgames.com}
+   *
+   * @param {hex} centerHex                   A hex to get surrounding hexes from.
+   * @param {number} [range=0]                The range (in hexes) surrounding the center hex.
+   * @param {boolean} [includeCenterHex=true] Whether to include the center hex in the result
+   *
+   * @returns {hex[]}             An array with all hexes surrounding the passed center hex.
+   *                              Only hexes that are present in the grid are returned.
+   *
+   * @throws {Error} When no valid hex is passed.
+   *
+   * @example
+   * const Hex = Honeycomb.extendHex({ orientation: 'pointy' })
+   * const Grid = Honeycomb.defineGrid(Hex)
+   * const grid = Grid.rectangle({ width: 5, height: 5 })
+   *
+   * grid.hexesInRange(Hex(2, 2), 2)          // [
+   *                                          //    { x: 0, y: 2 },
+   *                                          //    { x: 0, y: 3 },
+   *                                          //    { x: 1, y: 4 },
+   *                                          //    ...
+   *                                          //    { x: 3, y: 0 },
+   *                                          //    { x: 3, y: 1 },
+   *                                          //    { x: 4, y: 2 }
+   *                                          // ]
+   *
+   * // only returns hexes that exist in the grid:
+   * grid.hexesInRange(Hex(0, 0), 1)          // [
+   *                                          //    { x: 0, y: 0 },
+   *                                          //    { x: 0, y: 1 },
+   *                                          //    { x: 1, y: 0 }
+   *                                          // ]
+   *
+   * // exclude center hex:
+   * grid.hexesInRange(Hex(2, 2), 1, false)   // [
+   *                                          //    { x: 1, y: 2 },
+   *                                          //    { x: 1, y: 3 },
+   *                                          //    { x: 1, y: 1 },
+   *                                          //    { x: 2, y: 3 },
+   *                                          //    { x: 3, y: 2 }
+   *                                          // ]
+   */
+
+
+  hexesInRange(centerHex, range = 0) {
+    if (!this.store.get(centerHex.toString())) {
+      throw new Error(`Center hex with coordinates ${centerHex} not present in grid.`);
+    }
+
+    const hexes = []; // const coordinates = []
+    // const DIRECTIONS_FLAT = [
+    //   // 2,3
+    //   { q: 0, r: -1 }, // N // 2,2
+    //   { q: 1, r: -1 }, // NE // 3,2
+    //   null, // ambiguous
+    //   { q: 1, r: 0 }, // SE // 3,3
+    //   { q: 0, r: 1 }, // S // 2,4
+    //   { q: -1, r: 1 }, // SW // 1,4
+    //   null, // ambiguous
+    //   { q: -1, r: 0 }, // NW // 1,3
+    // ]
+    // 2,3
+    //
+    // 1,3
+    // 1,4
+    // 2,2
+    // 2,3
+    // 2,4
+    // 3,2
+    // 3,3
+
+    for (let q = -range; q <= range; q++) {
+      for (let r = Math.max(-range, -q - range); r <= Math.min(range, -q + range); r++) {
+        // const offsetCoordinates = hexToOffset({
+        //   q: centerHex.q + q,
+        //   r: centerHex.r + r,
+        //   offset: centerHex.offset,
+        //   isPointy: centerHex.isPointy,
+        // })
+        // const coordinate = `${offsetCoordinates.col},${offsetCoordinates.row}`
+        const coordinate = `${centerHex.q + q},${centerHex.r + r}`; // if (coordinate === '2,1') {
+        //   console.log({ q, r })
+        // }
+        // coordinates.push(coordinate)
+        // coordinates.push(`${q},${r}`)
+
+        const hex = this.store.get(coordinate);
+        hexes.push(hex);
+      }
+    } // console.log(coordinates)
+
+
+    return hexes.filter(Boolean);
+  }
 
   map(callback) {
     const map = currentGrid => this._getPrevHexes(currentGrid).map(hex => {
@@ -2312,113 +2409,134 @@ const ON_WATER_OR_SWAMP = 7;
 const ON_WATER_OR_MOUNTAIN = 8;
 const ON_SWAMP_OR_MOUNTAIN = 9;
 const ALL_HINTS = [{
-  isPossibleOnHex: (grid, hex) => {
-    return hex.terrain.isForest() || hex.terrain.isDesert(); // if (hints[ON_WATER_OR_SWAMP].isActive) return false
-    // if (hints[ON_WATER_OR_MOUNTAIN].isActive) return false
-    // if (hints[ON_SWAMP_OR_MOUNTAIN].isActive) return false
-    // return hex.isActive
-  },
-  name: 'on forest or desert' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => {
-  //   const isPossibleOnHex = hint.isPossibleOnHex(grid, hex)
-  //   if (isPossibleOnHex != isHabitat) {
-  //     hint.isActive = false
-  //   }
-  // },
-
+  isPossibleOnHex: (grid, hex) => hex.terrain.isForest() || hex.terrain.isDesert(),
+  name: 'on forest or desert'
+}, {
+  isPossibleOnHex: (grid, hex) => hex.terrain.isForest() || hex.terrain.isWater(),
+  name: 'on forest or water'
+}, {
+  isPossibleOnHex: (grid, hex) => hex.terrain.isForest() || hex.terrain.isSwamp(),
+  name: 'on forest or swamp'
+}, {
+  isPossibleOnHex: (grid, hex) => hex.terrain.isForest() || hex.terrain.isMountain(),
+  name: 'on forest or mountain'
+}, {
+  isPossibleOnHex: (grid, hex) => hex.terrain.isDesert() || hex.terrain.isWater(),
+  name: 'on desert or water'
+}, {
+  isPossibleOnHex: (grid, hex) => hex.terrain.isDesert() || hex.terrain.isSwamp(),
+  name: 'on desert or swamp'
+}, {
+  isPossibleOnHex: (grid, hex) => hex.terrain.isDesert() || hex.terrain.isMountain(),
+  name: 'on desert or mountain'
+}, {
+  isPossibleOnHex: (grid, hex) => hex.terrain.isWater() || hex.terrain.isSwamp(),
+  name: 'on water or swamp'
+}, {
+  isPossibleOnHex: (grid, hex) => hex.terrain.isWater() || hex.terrain.isMountain(),
+  name: 'on water or mountain'
+}, {
+  isPossibleOnHex: (grid, hex) => hex.terrain.isSwamp() || hex.terrain.isMountain(),
+  name: 'on swamp or mountain'
 }, {
   isPossibleOnHex: (grid, hex) => {
-    return hex.terrain.isForest() || hex.terrain.isWater(); // if (hints[ON_DESERT_OR_SWAMP].isActive) return false
-    // if (hints[ON_DESERT_OR_MOUNTAIN].isActive) return false
-    // if (hints[ON_SWAMP_OR_MOUNTAIN].isActive) return false
-    // return hex.isActive
+    const hexes = grid.hexesInRange(hex, 1);
+    return hexes.some(hex => hex.terrain.isForest());
   },
-  name: 'on forest or water' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
-
+  name: 'within one space of forest'
 }, {
   isPossibleOnHex: (grid, hex) => {
-    return hex.terrain.isForest() || hex.terrain.isSwamp(); // if (hints[ON_DESERT_OR_WATER].isActive) return false
-    // if (hints[ON_DESERT_OR_MOUNTAIN].isActive) return false
-    // if (hints[ON_WATER_OR_MOUNTAIN].isActive) return false
-    // return hex.isActive
+    const hexes = grid.hexesInRange(hex, 1);
+    return hexes.some(hex => hex.terrain.isDesert());
   },
-  name: 'on forest or swamp' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
-
+  name: 'within one space of desert'
 }, {
   isPossibleOnHex: (grid, hex) => {
-    return hex.terrain.isForest() || hex.terrain.isMountain(); // if (hints[ON_DESERT_OR_WATER].isActive) return false
-    // if (hints[ON_DESERT_OR_SWAMP].isActive) return false
-    // if (hints[ON_WATER_OR_SWAMP].isActive) return false
-    // return hex.isActive
+    const hexes = grid.hexesInRange(hex, 1);
+    return hexes.some(hex => hex.terrain.isSwamp());
   },
-  name: 'on forest or mountain' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
-
+  name: 'within one space of swamp'
 }, {
   isPossibleOnHex: (grid, hex) => {
-    return hex.terrain.isDesert() || hex.terrain.isWater(); // if (hints[ON_FOREST_OR_SWAMP].isActive) return false
-    // if (hints[ON_FOREST_OR_MOUNTAIN].isActive) return false
-    // if (hints[ON_SWAMP_OR_MOUNTAIN].isActive) return false
-    // return hex.isActive
+    const hexes = grid.hexesInRange(hex, 1);
+    return hexes.some(hex => hex.terrain.isMountain());
   },
-  name: 'on desert or water' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
-
+  name: 'within one space of mountain'
 }, {
   isPossibleOnHex: (grid, hex) => {
-    return hex.terrain.isDesert() || hex.terrain.isSwamp(); // if (hints[ON_FOREST_OR_WATER].isActive) return false
-    // if (hints[ON_FOREST_OR_MOUNTAIN].isActive) return false
-    // if (hints[ON_WATER_OR_MOUNTAIN].isActive) return false
-    // return hex.isActive
+    const hexes = grid.hexesInRange(hex, 1);
+    return hexes.some(hex => hex.terrain.isWater());
   },
-  name: 'on desert or swamp' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
-
+  name: 'within one space of water'
 }, {
   isPossibleOnHex: (grid, hex) => {
-    return hex.terrain.isDesert() || hex.terrain.isMountain(); // if (hints[ON_FOREST_OR_WATER].isActive) return false
-    // if (hints[ON_FOREST_OR_SWAMP].isActive) return false
-    // if (hints[ON_WATER_OR_SWAMP].isActive) return false
-    // return hex.isActive
+    const hexes = grid.hexesInRange(hex, 1);
+    return hexes.some(hex => hex.terrain.hasBears() || hex.terrain.hasCougars());
   },
-  name: 'on desert or mountain' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
-
+  name: 'within one space of either animal territory'
+}, // {
+//   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+//     const hexes = grid.hexesInRange(hex, 1)
+//     return hexes.some((hex) => hex.terrain.hasBears() || hex.terrain.hasCougars())
+//   },
+//   name: 'within two spaces of a standing stone',
+// },
+// {
+//   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+//     const hexes = grid.hexesInRange(hex, 1)
+//     return hexes.some((hex) => hex.terrain.hasBears() || hex.terrain.hasCougars())
+//   },
+//   name: 'within two spaces of an abandoned shack',
+// },
+{
+  isPossibleOnHex: (grid, hex) => {
+    const hexes = grid.hexesInRange(hex, 2);
+    return hexes.some(hex => hex.terrain.hasBears());
+  },
+  name: 'within two spaces of bear territory'
 }, {
   isPossibleOnHex: (grid, hex) => {
-    return hex.terrain.isWater() || hex.terrain.isSwamp(); // if (hints[ON_FOREST_OR_DESERT].isActive) return false
-    // if (hints[ON_FOREST_OR_MOUNTAIN].isActive) return false
-    // if (hints[ON_DESERT_OR_MOUNTAIN].isActive) return false
-    // return hex.isActive
+    const hexes = grid.hexesInRange(hex, 2);
+    return hexes.some(hex => hex.terrain.hasCougars());
   },
-  name: 'on water or swamp' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
-
-}, {
-  isPossibleOnHex: (grid, hex) => {
-    return hex.terrain.isWater() || hex.terrain.isMountain(); // if (hints[ON_FOREST_OR_DESERT].isActive) return false
-    // if (hints[ON_FOREST_OR_SWAMP].isActive) return false
-    // if (hints[ON_DESERT_OR_SWAMP].isActive) return false
-    // return hex.isActive
-  },
-  name: 'on water or mountain' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
-
-}, {
-  isPossibleOnHex: (grid, hex) => {
-    return hex.terrain.isSwamp() || hex.terrain.isMountain(); // if (hints[ON_FOREST_OR_DESERT].isActive) return false
-    // if (hints[ON_FOREST_OR_WATER].isActive) return false
-    // if (hints[ON_DESERT_OR_WATER].isActive) return false
-    // return hex.isActive
-  },
-  name: 'on swamp or mountain' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
-
-}];
+  name: 'within two spaces of cougar territory'
+} // {
+//   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+//     const hexes = grid.hexesInRange(hex, 3)
+//     return hexes.some((hex) => hex.terrain.hasCougars())
+//   },
+//   name: 'within three spaces of a blue structure',
+// },
+// {
+//   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+//     const hexes = grid.hexesInRange(hex, 3)
+//     return hexes.some((hex) => hex.terrain.hasCougars())
+//   },
+//   name: 'within three spaces of a white structure',
+// },
+// {
+//   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+//     const hexes = grid.hexesInRange(hex, 3)
+//     return hexes.some((hex) => hex.terrain.hasCougars())
+//   },
+//   name: 'within three spaces of a green structure',
+// },
+// {
+//   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+//     const hexes = grid.hexesInRange(hex, 3)
+//     return hexes.some((hex) => hex.terrain.hasCougars())
+//   },
+//   name: 'within three spaces of a black structure',
+// },
+];
 exports.ALL_HINTS = ALL_HINTS;
 
 class Hint {
-  // evaluateCb: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null
   constructor(params) {
     this.isPossibleOnHex = params.isPossibleOnHex;
     this.isActive = true;
-    this.name = params.name; // this.evaluateCb = params.evaluate
-  } // evaluate(grid: Grid<HexWithTerrain>, hex: HexWithTerrain, isHabitat: boolean) {
-  //   return this.evaluateCb(grid, this, hex, isHabitat)
-  // }
-
+    this.name = params.name;
+  }
 
   evaluate(grid, hex, isHabitat) {
     const isPossibleOnHex = this.isPossibleOnHex(grid, hex);
@@ -2526,9 +2644,7 @@ const hexPrototype = (0, _src.createHexPrototype)({
 let grid = new _src.Grid(hexPrototype, (0, _src.rectangle)({
   width: 12,
   height: 9
-})).each(h => {
-  h.isActive = null;
-});
+}));
 grid.run(); // .traverse([at({ q: 0, r: 0 }), move(Compass.SE), move(Compass.NE)])
 // .filter(inStore)
 // .each(render)
@@ -2596,7 +2712,8 @@ document.addEventListener('click', e => {
   const hexEl = clickEl && clickEl.closest('[data-hex]');
   if (!hexEl) return;
   selectedHex = hexEl.dataset.hex || '0,0';
-  (0, _render.highlightSelectedHex)(grid.store.get(selectedHex));
+  const hex = grid.store.get(selectedHex);
+  (0, _render.highlightSelectedHex)(hex);
 });
 (_document$querySelect = document.querySelector('.js-submit')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', () => {
   const gameplayEl = document.getElementById('gameplay');

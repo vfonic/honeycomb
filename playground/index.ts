@@ -12,9 +12,7 @@ const hexPrototype = createHexPrototype<HexWithTerrain>({
   origin: 'topLeft',
 })
 
-let grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 })).each((h) => {
-  h.isActive = null
-})
+let grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 }))
 grid.run()
 // .traverse([at({ q: 0, r: 0 }), move(Compass.SE), move(Compass.NE)])
 // .filter(inStore)
@@ -93,7 +91,8 @@ document.addEventListener('click', (e) => {
   if (!hexEl) return
 
   selectedHex = hexEl.dataset.hex || '0,0'
-  highlightSelectedHex(grid.store.get(selectedHex))
+  const hex = grid.store.get(selectedHex)!
+  highlightSelectedHex(hex)
 })
 
 document.querySelector('.js-submit')?.addEventListener('click', () => {
