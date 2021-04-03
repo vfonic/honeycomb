@@ -2,6 +2,7 @@ import { HexWithTerrain, highlightSelectedHex, renderAll } from './render'
 import { tilesToArray } from './tiles'
 import { createHexPrototype, Grid, rectangle } from '../src'
 import { Player } from './player'
+import { Tile } from './terrain'
 
 console.log(new Date())
 
@@ -9,13 +10,10 @@ const hexPrototype = createHexPrototype<HexWithTerrain>({
   dimensions: { width: 60, height: 51.96 },
   orientation: 'flat',
   origin: 'topLeft',
-  terrain: 'unknown',
-  isActive: false,
 })
 
 let grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 })).each((h) => {
-  h.terrain = 'unknown'
-  h.isActive = false
+  h.isActive = null
 })
 grid.run()
 // .traverse([at({ q: 0, r: 0 }), move(Compass.SE), move(Compass.NE)])
@@ -36,11 +34,30 @@ const renderTiles = (hexagonsOrdered: HexWithTerrain[]) => {
   highlightSelectedHex(grid.store.get(selectedHex))
 }
 
+const printActiveHintsForPlayer = (player: Player) => {
+  console.table(player.hints, ['name', 'isActive'])
+}
+
 const setIsActive = (hexagonsOrdered: HexWithTerrain[]) => {
   hexagonsOrdered.forEach((hex) => {
-    const player = players[0]
-    hex.isActive = false
-    player.hints.forEach((hint) => (hex.isActive ||= hint.isPossibleOnHex(grid, hex, player.hints)))
+    const allPlayersHintsArrays: number[] = []
+    players.forEach((player) => {
+      let hintsArray = 0
+      player.hints.forEach((hint) => {
+        const isPossibleOnHex = hint.isActive && hint.isPossibleOnHex(grid, hex)
+        hintsArray = hintsArray * 2 + (isPossibleOnHex ? 1 : 0)
+      })
+      allPlayersHintsArrays.push(hintsArray)
+    })
+
+    // we have all hints for all players,
+    // we need at least as many 1s as there are players
+    const ones = allPlayersHintsArrays.reduce((accumulator, current) => accumulator | current)
+    const numberOfOnes = ones
+      .toString(2)
+      .split('')
+      .reduce((accumulator, current) => accumulator + (current === '1' ? 1 : 0), 0)
+    hex.isActive = numberOfOnes >= players.length
   })
 }
 
@@ -57,11 +74,12 @@ const gatherAndRender = () => {
 
   let index = 0
   grid = grid.each((hex) => {
-    hex.terrain = tilesInArray[index++]
+    hex.terrain = new Tile(tilesInArray[index++])
     hexagonsOrdered.push(hex)
   })
   grid.run()
 
+  printActiveHintsForPlayer(players[0])
   setIsActive(hexagonsOrdered)
   renderTiles(hexagonsOrdered)
 }
@@ -80,10 +98,15 @@ document.addEventListener('click', (e) => {
 
 document.querySelector('.js-submit')?.addEventListener('click', () => {
   const gameplayEl = document.getElementById('gameplay')! as HTMLInputElement
-  const player = (document.querySelector('select[name="player"]')! as HTMLInputElement).value
+  const playerColor = (document.querySelector('select[name="player"]')! as HTMLInputElement).value
   const habitat = document.querySelector('input[name="habitat"]')! as HTMLInputElement
-  gameplayEl.value += `${player} ${selectedHex} ${habitat.checked ? '✅' : '⛔️'}\n`
+  gameplayEl.value += `${playerColor} ${selectedHex} ${habitat.checked ? '✅' : '⛔️'}\n`
   gameplayEl.scrollTop = gameplayEl.scrollHeight
+
+  const player = players[0]
+  player.activeHints.forEach((hint) => hint.evaluate(grid, grid.store.get(selectedHex)!, habitat.checked))
+
+  gatherAndRender()
 })
 
 gatherAndRender()

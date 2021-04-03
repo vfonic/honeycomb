@@ -1,5 +1,5 @@
 import { Hex } from '../dist'
-import { D, F, M, S, W } from './tiles'
+import { Tile } from './terrain'
 
 // declare const SVG: any
 
@@ -20,44 +20,45 @@ export const renderAll = (hexes: HexWithTerrain[]) => {
 
 const fillHexagon = (hex: HexWithTerrain) => {
   let fill = 'none'
-  if (hex.terrain.includes(F)) {
+  if (hex.terrain.isForest()) {
     fill = '#009900'
-  } else if (hex.terrain.includes(W)) {
+  } else if (hex.terrain.isWater()) {
     fill = '#2596be'
-  } else if (hex.terrain.includes(D)) {
+  } else if (hex.terrain.isDesert()) {
     fill = '#ffcc00'
-  } else if (hex.terrain.includes(M)) {
+  } else if (hex.terrain.isMountain()) {
     fill = 'gray'
-  } else if (hex.terrain.includes(S)) {
+  } else if (hex.terrain.isSwamp()) {
     fill = 'purple'
   }
   // const polygon = draw.polygon(hex.corners.map(({ x, y }) => `${x},${y}`)).fill(fill)
   // draw.group().add(polygon)
   return ` 
     <polygon class='js-highlightHex' points='${hex.corners
-      .map(({ x, y }) => `${x},${y}`)
-      .join(',')}' fill='${fill}'></polygon>
+    .map(({ x, y }) => `${x},${y}`)
+    .join(',')}' fill='${fill}'></polygon>
   `
 }
 
-export type HexWithTerrain = Hex & { terrain: string; isActive: boolean }
+export type ActiveType = null | boolean
+export type HexWithTerrain = Hex & { terrain: Tile; isActive: ActiveType }
 
 const BORDER_DISTANCE = 3
 const DX = [-0.75, -1, -0.75, 0.75, 1, 0.75]
 const DY = [0.75, 0, -0.75, -0.75, 0, 0.75]
 const addBearsAndCougars = (hex: HexWithTerrain) => {
-  if (!hex.terrain.includes('bears') && !hex.terrain.includes('cougars')) {
+  if (!hex.terrain.hasBears() && !hex.terrain.hasCougars()) {
     return ''
   }
 
-  const color = hex.terrain.includes('bears') ? '#000' : '#b00'
+  const color = hex.terrain.hasBears() ? '#000' : '#b00'
 
   return `
     <polygon points='${hex.corners.map(({ x, y }, i) => {
-      x += BORDER_DISTANCE * DX[i]
-      y += BORDER_DISTANCE * DY[i]
-      return `${x},${y}`
-    })}' fill='none' stroke-width='1.5' stroke='${color}' />
+    x += BORDER_DISTANCE * DX[i]
+    y += BORDER_DISTANCE * DY[i]
+    return `${x},${y}`
+  })}' fill='none' stroke-width='1.5' stroke='${color}' />
   `
 }
 
@@ -92,10 +93,10 @@ export const highlightSelectedHex = (hex?: Hex) => {
 
   graphicsEl.innerHTML += `
     <polygon highlighted points='${hex.corners.map(({ x, y }, i) => {
-      x += (BORDER_DISTANCE * DX[i]) / 3
-      y += (BORDER_DISTANCE * DY[i]) / 3
-      return `${x},${y}`
-    })}' fill='none' stroke-width='2' stroke='#fff' />
+    x += (BORDER_DISTANCE * DX[i]) / 3
+    y += (BORDER_DISTANCE * DY[i]) / 3
+    return `${x},${y}`
+  })}' fill='none' stroke-width='2' stroke='#fff' />
   `
 }
 

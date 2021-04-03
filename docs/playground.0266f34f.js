@@ -117,7 +117,128 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"playground/tiles.ts":[function(require,module,exports) {
+})({"playground/render.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.render = exports.highlightSelectedHex = exports.renderAll = void 0;
+// declare const SVG: any
+// const draw = SVG().addTo('.js-map').size('100%', '100%')
+const mapWrapperEl = document.querySelector('.js-map');
+
+if (!mapWrapperEl) {
+  throw new Error('Map element not found');
+}
+
+const renderAll = hexes => {
+  mapWrapperEl.innerHTML = `
+    <svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='555px' height='494px'>
+        ${hexes.map(hex => render(hex)).join('')}
+    </svg>
+  `;
+};
+
+exports.renderAll = renderAll;
+
+const fillHexagon = hex => {
+  let fill = 'none';
+
+  if (hex.terrain.isForest()) {
+    fill = '#009900';
+  } else if (hex.terrain.isWater()) {
+    fill = '#2596be';
+  } else if (hex.terrain.isDesert()) {
+    fill = '#ffcc00';
+  } else if (hex.terrain.isMountain()) {
+    fill = 'gray';
+  } else if (hex.terrain.isSwamp()) {
+    fill = 'purple';
+  } // const polygon = draw.polygon(hex.corners.map(({ x, y }) => `${x},${y}`)).fill(fill)
+  // draw.group().add(polygon)
+
+
+  return ` 
+    <polygon class='js-highlightHex' points='${hex.corners.map(({
+    x,
+    y
+  }) => `${x},${y}`).join(',')}' fill='${fill}'></polygon>
+  `;
+};
+
+const BORDER_DISTANCE = 3;
+const DX = [-0.75, -1, -0.75, 0.75, 1, 0.75];
+const DY = [0.75, 0, -0.75, -0.75, 0, 0.75];
+
+const addBearsAndCougars = hex => {
+  if (!hex.terrain.hasBears() && !hex.terrain.hasCougars()) {
+    return '';
+  }
+
+  const color = hex.terrain.hasBears() ? '#000' : '#b00';
+  return `
+    <polygon points='${hex.corners.map(({
+    x,
+    y
+  }, i) => {
+    x += BORDER_DISTANCE * DX[i];
+    y += BORDER_DISTANCE * DY[i];
+    return `${x},${y}`;
+  })}' fill='none' stroke-width='1.5' stroke='${color}' />
+  `;
+};
+
+const addCoordinates = hex => {
+  // const text = draw
+  //   .text(`${hex.q},${hex.r}`)
+  //   // .text(`${hex.col},${hex.row}`)
+  //   .font({
+  //     size: hex.width * 0.25,
+  //     anchor: 'middle',
+  //     'dominant-baseline': 'central',
+  //     leading: 0,
+  //   })
+  //   .translate(hex.x, hex.y)
+  // draw.add(text)
+  return `
+    <text font-size='${hex.width * 0.25}' text-anchor='middle' dominant-baseline='central' transform='matrix(1,0,0,1,${hex.x},${hex.y})'>
+      <tspan dy='0' x='0'>${hex.q},${hex.r}</tspan>
+    </text>
+  `;
+};
+
+const highlightSelectedHex = hex => {
+  if (!hex) return '';
+  const graphicsEl = mapWrapperEl.querySelector(`g[data-hex="${hex.q},${hex.r}"]`);
+  if (!graphicsEl) return '';
+  const oldHighlightedEl = mapWrapperEl.querySelector('polygon[highlighted]');
+  oldHighlightedEl && oldHighlightedEl.remove();
+  graphicsEl.innerHTML += `
+    <polygon highlighted points='${hex.corners.map(({
+    x,
+    y
+  }, i) => {
+    x += BORDER_DISTANCE * DX[i] / 3;
+    y += BORDER_DISTANCE * DY[i] / 3;
+    return `${x},${y}`;
+  })}' fill='none' stroke-width='2' stroke='#fff' />
+  `;
+};
+
+exports.highlightSelectedHex = highlightSelectedHex;
+
+const render = hex => {
+  let result = '';
+  result += fillHexagon(hex);
+  result += addBearsAndCougars(hex);
+  result += addCoordinates(hex);
+  result += highlightSelectedHex(hex);
+  return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive ? '1' : '0.5'}'>${result}</g>`;
+};
+
+exports.render = render;
+},{}],"playground/tiles.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -195,131 +316,7 @@ const tilesToArray = tilesOrder => {
 };
 
 exports.tilesToArray = tilesToArray;
-},{}],"playground/render.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.render = exports.highlightSelectedHex = exports.renderAll = void 0;
-
-var _tiles = require("./tiles");
-
-// declare const SVG: any
-// const draw = SVG().addTo('.js-map').size('100%', '100%')
-const mapWrapperEl = document.querySelector('.js-map');
-
-if (!mapWrapperEl) {
-  throw new Error('Map element not found');
-}
-
-const renderAll = hexes => {
-  mapWrapperEl.innerHTML = `
-    <svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='555px' height='494px'>
-        ${hexes.map(hex => render(hex)).join('')}
-    </svg>
-  `;
-};
-
-exports.renderAll = renderAll;
-
-const fillHexagon = hex => {
-  let fill = 'none';
-
-  if (hex.terrain.includes(_tiles.F)) {
-    fill = '#009900';
-  } else if (hex.terrain.includes(_tiles.W)) {
-    fill = '#2596be';
-  } else if (hex.terrain.includes(_tiles.D)) {
-    fill = '#ffcc00';
-  } else if (hex.terrain.includes(_tiles.M)) {
-    fill = 'gray';
-  } else if (hex.terrain.includes(_tiles.S)) {
-    fill = 'purple';
-  } // const polygon = draw.polygon(hex.corners.map(({ x, y }) => `${x},${y}`)).fill(fill)
-  // draw.group().add(polygon)
-
-
-  return ` 
-    <polygon class='js-highlightHex' points='${hex.corners.map(({
-    x,
-    y
-  }) => `${x},${y}`).join(',')}' fill='${fill}'></polygon>
-  `;
-};
-
-const BORDER_DISTANCE = 3;
-const DX = [-0.75, -1, -0.75, 0.75, 1, 0.75];
-const DY = [0.75, 0, -0.75, -0.75, 0, 0.75];
-
-const addBearsAndCougars = hex => {
-  if (!hex.terrain.includes('bears') && !hex.terrain.includes('cougars')) {
-    return '';
-  }
-
-  const color = hex.terrain.includes('bears') ? '#000' : '#b00';
-  return `
-    <polygon points='${hex.corners.map(({
-    x,
-    y
-  }, i) => {
-    x += BORDER_DISTANCE * DX[i];
-    y += BORDER_DISTANCE * DY[i];
-    return `${x},${y}`;
-  })}' fill='none' stroke-width='1.5' stroke='${color}' />
-  `;
-};
-
-const addCoordinates = hex => {
-  // const text = draw
-  //   .text(`${hex.q},${hex.r}`)
-  //   // .text(`${hex.col},${hex.row}`)
-  //   .font({
-  //     size: hex.width * 0.25,
-  //     anchor: 'middle',
-  //     'dominant-baseline': 'central',
-  //     leading: 0,
-  //   })
-  //   .translate(hex.x, hex.y)
-  // draw.add(text)
-  return `
-    <text font-size='${hex.width * 0.25}' text-anchor='middle' dominant-baseline='central' transform='matrix(1,0,0,1,${hex.x},${hex.y})'>
-      <tspan dy='0' x='0'>${hex.q},${hex.r}</tspan>
-    </text>
-  `;
-};
-
-const highlightSelectedHex = hex => {
-  if (!hex) return '';
-  const graphicsEl = mapWrapperEl.querySelector(`g[data-hex="${hex.q},${hex.r}"]`);
-  if (!graphicsEl) return '';
-  const oldHighlightedEl = mapWrapperEl.querySelector('polygon[highlighted]');
-  oldHighlightedEl && oldHighlightedEl.remove();
-  graphicsEl.innerHTML += `
-    <polygon highlighted points='${hex.corners.map(({
-    x,
-    y
-  }, i) => {
-    x += BORDER_DISTANCE * DX[i] / 3;
-    y += BORDER_DISTANCE * DY[i] / 3;
-    return `${x},${y}`;
-  })}' fill='none' stroke-width='2' stroke='#fff' />
-  `;
-};
-
-exports.highlightSelectedHex = highlightSelectedHex;
-
-const render = hex => {
-  let result = '';
-  result += fillHexagon(hex);
-  result += addBearsAndCougars(hex);
-  result += addCoordinates(hex);
-  result += highlightSelectedHex(hex);
-  return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive ? '1' : '0.5'}'>${result}</g>`;
-};
-
-exports.render = render;
-},{"./tiles":"playground/tiles.ts"}],"src/utils/isObject.ts":[function(require,module,exports) {
+},{}],"src/utils/isObject.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1894,8 +1891,10 @@ class Grid {
   }
 
   run(callback) {
-    this.hexes().forEach(hex => callback && callback(hex, this));
-    return this._clone(() => []);
+    const hexes = this._getPrevHexes(this);
+
+    hexes.forEach(hex => callback && callback(hex, this));
+    return this._clone(() => hexes);
   }
 
   _clone(getHexState) {
@@ -2289,7 +2288,150 @@ Object.keys(_hex).forEach(function (key) {
     }
   });
 });
-},{"./compass":"src/compass/index.ts","./grid":"src/grid/index.ts","./hex":"src/hex/index.ts"}],"playground/player.ts":[function(require,module,exports) {
+},{"./compass":"src/compass/index.ts","./grid":"src/grid/index.ts","./hex":"src/hex/index.ts"}],"playground/hint.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Hint = exports.ALL_HINTS = void 0;
+// type Hint = {
+//   isActive: ActiveType
+//   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain) => boolean
+//   evaluate: (hex: HexWithTerrain, isHabitat: boolean) => void
+//   name: string
+// }
+const ON_FOREST_OR_DESERT = 0;
+const ON_FOREST_OR_WATER = 1;
+const ON_FOREST_OR_SWAMP = 2;
+const ON_FOREST_OR_MOUNTAIN = 3;
+const ON_DESERT_OR_WATER = 4;
+const ON_DESERT_OR_SWAMP = 5;
+const ON_DESERT_OR_MOUNTAIN = 6;
+const ON_WATER_OR_SWAMP = 7;
+const ON_WATER_OR_MOUNTAIN = 8;
+const ON_SWAMP_OR_MOUNTAIN = 9;
+const ALL_HINTS = [{
+  isPossibleOnHex: (grid, hex) => {
+    return hex.terrain.isForest() || hex.terrain.isDesert(); // if (hints[ON_WATER_OR_SWAMP].isActive) return false
+    // if (hints[ON_WATER_OR_MOUNTAIN].isActive) return false
+    // if (hints[ON_SWAMP_OR_MOUNTAIN].isActive) return false
+    // return hex.isActive
+  },
+  name: 'on forest or desert' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => {
+  //   const isPossibleOnHex = hint.isPossibleOnHex(grid, hex)
+  //   if (isPossibleOnHex != isHabitat) {
+  //     hint.isActive = false
+  //   }
+  // },
+
+}, {
+  isPossibleOnHex: (grid, hex) => {
+    return hex.terrain.isForest() || hex.terrain.isWater(); // if (hints[ON_DESERT_OR_SWAMP].isActive) return false
+    // if (hints[ON_DESERT_OR_MOUNTAIN].isActive) return false
+    // if (hints[ON_SWAMP_OR_MOUNTAIN].isActive) return false
+    // return hex.isActive
+  },
+  name: 'on forest or water' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+
+}, {
+  isPossibleOnHex: (grid, hex) => {
+    return hex.terrain.isForest() || hex.terrain.isSwamp(); // if (hints[ON_DESERT_OR_WATER].isActive) return false
+    // if (hints[ON_DESERT_OR_MOUNTAIN].isActive) return false
+    // if (hints[ON_WATER_OR_MOUNTAIN].isActive) return false
+    // return hex.isActive
+  },
+  name: 'on forest or swamp' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+
+}, {
+  isPossibleOnHex: (grid, hex) => {
+    return hex.terrain.isForest() || hex.terrain.isMountain(); // if (hints[ON_DESERT_OR_WATER].isActive) return false
+    // if (hints[ON_DESERT_OR_SWAMP].isActive) return false
+    // if (hints[ON_WATER_OR_SWAMP].isActive) return false
+    // return hex.isActive
+  },
+  name: 'on forest or mountain' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+
+}, {
+  isPossibleOnHex: (grid, hex) => {
+    return hex.terrain.isDesert() || hex.terrain.isWater(); // if (hints[ON_FOREST_OR_SWAMP].isActive) return false
+    // if (hints[ON_FOREST_OR_MOUNTAIN].isActive) return false
+    // if (hints[ON_SWAMP_OR_MOUNTAIN].isActive) return false
+    // return hex.isActive
+  },
+  name: 'on desert or water' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+
+}, {
+  isPossibleOnHex: (grid, hex) => {
+    return hex.terrain.isDesert() || hex.terrain.isSwamp(); // if (hints[ON_FOREST_OR_WATER].isActive) return false
+    // if (hints[ON_FOREST_OR_MOUNTAIN].isActive) return false
+    // if (hints[ON_WATER_OR_MOUNTAIN].isActive) return false
+    // return hex.isActive
+  },
+  name: 'on desert or swamp' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+
+}, {
+  isPossibleOnHex: (grid, hex) => {
+    return hex.terrain.isDesert() || hex.terrain.isMountain(); // if (hints[ON_FOREST_OR_WATER].isActive) return false
+    // if (hints[ON_FOREST_OR_SWAMP].isActive) return false
+    // if (hints[ON_WATER_OR_SWAMP].isActive) return false
+    // return hex.isActive
+  },
+  name: 'on desert or mountain' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+
+}, {
+  isPossibleOnHex: (grid, hex) => {
+    return hex.terrain.isWater() || hex.terrain.isSwamp(); // if (hints[ON_FOREST_OR_DESERT].isActive) return false
+    // if (hints[ON_FOREST_OR_MOUNTAIN].isActive) return false
+    // if (hints[ON_DESERT_OR_MOUNTAIN].isActive) return false
+    // return hex.isActive
+  },
+  name: 'on water or swamp' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+
+}, {
+  isPossibleOnHex: (grid, hex) => {
+    return hex.terrain.isWater() || hex.terrain.isMountain(); // if (hints[ON_FOREST_OR_DESERT].isActive) return false
+    // if (hints[ON_FOREST_OR_SWAMP].isActive) return false
+    // if (hints[ON_DESERT_OR_SWAMP].isActive) return false
+    // return hex.isActive
+  },
+  name: 'on water or mountain' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+
+}, {
+  isPossibleOnHex: (grid, hex) => {
+    return hex.terrain.isSwamp() || hex.terrain.isMountain(); // if (hints[ON_FOREST_OR_DESERT].isActive) return false
+    // if (hints[ON_FOREST_OR_WATER].isActive) return false
+    // if (hints[ON_DESERT_OR_WATER].isActive) return false
+    // return hex.isActive
+  },
+  name: 'on swamp or mountain' // evaluate: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null,
+
+}];
+exports.ALL_HINTS = ALL_HINTS;
+
+class Hint {
+  // evaluateCb: (grid: Grid<HexWithTerrain>, hint: Hint, hex: HexWithTerrain, isHabitat: boolean) => null
+  constructor(params) {
+    this.isPossibleOnHex = params.isPossibleOnHex;
+    this.isActive = true;
+    this.name = params.name; // this.evaluateCb = params.evaluate
+  } // evaluate(grid: Grid<HexWithTerrain>, hex: HexWithTerrain, isHabitat: boolean) {
+  //   return this.evaluateCb(grid, this, hex, isHabitat)
+  // }
+
+
+  evaluate(grid, hex, isHabitat) {
+    const isPossibleOnHex = this.isPossibleOnHex(grid, hex);
+
+    if (isPossibleOnHex != isHabitat) {
+      this.isActive = false;
+    }
+  }
+
+}
+
+exports.Hint = Hint;
+},{}],"playground/player.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2297,26 +2439,66 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Player = void 0;
 
-var _tiles = require("./tiles");
-
-const ALL_HINTS = [//  on forest or desert
-{
-  isPossibleOnHex: (grid, hex, hints) => {
-    return [_tiles.F, _tiles.D].includes(hex.terrain);
-  }
-}].map(hint => ({ ...hint,
-  isActive: true
-}));
+var _hint = require("./hint");
 
 class Player {
   constructor() {
-    this.hints = ALL_HINTS.map(hint => ({ ...hint
-    }));
+    this.hints = _hint.ALL_HINTS.map(hintParams => new _hint.Hint(hintParams));
+  }
+
+  get activeHints() {
+    return this.hints.filter(hint => hint.isActive);
   }
 
 }
 
 exports.Player = Player;
+},{"./hint":"playground/hint.ts"}],"playground/terrain.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Tile = void 0;
+
+var _tiles = require("./tiles");
+
+class Tile {
+  constructor(type) {
+    this.type = type;
+  }
+
+  isForest() {
+    return this.type.includes(_tiles.F);
+  }
+
+  isWater() {
+    return this.type.includes(_tiles.W);
+  }
+
+  isDesert() {
+    return this.type.includes(_tiles.D);
+  }
+
+  isMountain() {
+    return this.type.includes(_tiles.M);
+  }
+
+  isSwamp() {
+    return this.type.includes(_tiles.S);
+  }
+
+  hasBears() {
+    return this.type.includes('bears');
+  }
+
+  hasCougars() {
+    return this.type.includes('cougars');
+  }
+
+}
+
+exports.Tile = Tile;
 },{"./tiles":"playground/tiles.ts"}],"playground/index.ts":[function(require,module,exports) {
 "use strict";
 
@@ -2328,6 +2510,8 @@ var _src = require("../src");
 
 var _player = require("./player");
 
+var _terrain = require("./terrain");
+
 var _document$querySelect;
 
 console.log(new Date());
@@ -2337,16 +2521,13 @@ const hexPrototype = (0, _src.createHexPrototype)({
     height: 51.96
   },
   orientation: 'flat',
-  origin: 'topLeft',
-  terrain: 'unknown',
-  isActive: false
+  origin: 'topLeft'
 });
 let grid = new _src.Grid(hexPrototype, (0, _src.rectangle)({
   width: 12,
   height: 9
 })).each(h => {
-  h.terrain = 'unknown';
-  h.isActive = false;
+  h.isActive = null;
 });
 grid.run(); // .traverse([at({ q: 0, r: 0 }), move(Compass.SE), move(Compass.NE)])
 // .filter(inStore)
@@ -2366,11 +2547,26 @@ const renderTiles = hexagonsOrdered => {
   (0, _render.highlightSelectedHex)(grid.store.get(selectedHex));
 };
 
+const printActiveHintsForPlayer = player => {
+  console.table(player.hints, ['name', 'isActive']);
+};
+
 const setIsActive = hexagonsOrdered => {
   hexagonsOrdered.forEach(hex => {
-    const player = players[0];
-    hex.isActive = false;
-    player.hints.forEach(hint => hex.isActive || (hex.isActive = hint.isPossibleOnHex(grid, hex, player.hints)));
+    const allPlayersHintsArrays = [];
+    players.forEach(player => {
+      let hintsArray = 0;
+      player.hints.forEach(hint => {
+        const isPossibleOnHex = hint.isActive && hint.isPossibleOnHex(grid, hex);
+        hintsArray = hintsArray * 2 + (isPossibleOnHex ? 1 : 0);
+      });
+      allPlayersHintsArrays.push(hintsArray);
+    }); // we have all hints for all players,
+    // we need at least as many 1s as there are players
+
+    const ones = allPlayersHintsArrays.reduce((accumulator, current) => accumulator | current);
+    const numberOfOnes = ones.toString(2).split('').reduce((accumulator, current) => accumulator + (current === '1' ? 1 : 0), 0);
+    hex.isActive = numberOfOnes >= players.length;
   });
 };
 
@@ -2384,10 +2580,11 @@ const gatherAndRender = () => {
   const tilesInArray = (0, _tiles.tilesToArray)(values);
   let index = 0;
   grid = grid.each(hex => {
-    hex.terrain = tilesInArray[index++];
+    hex.terrain = new _terrain.Tile(tilesInArray[index++]);
     hexagonsOrdered.push(hex);
   });
   grid.run();
+  printActiveHintsForPlayer(players[0]);
   setIsActive(hexagonsOrdered);
   renderTiles(hexagonsOrdered);
 };
@@ -2403,13 +2600,16 @@ document.addEventListener('click', e => {
 });
 (_document$querySelect = document.querySelector('.js-submit')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', () => {
   const gameplayEl = document.getElementById('gameplay');
-  const player = document.querySelector('select[name="player"]').value;
+  const playerColor = document.querySelector('select[name="player"]').value;
   const habitat = document.querySelector('input[name="habitat"]');
-  gameplayEl.value += `${player} ${selectedHex} ${habitat.checked ? '✅' : '⛔️'}\n`;
+  gameplayEl.value += `${playerColor} ${selectedHex} ${habitat.checked ? '✅' : '⛔️'}\n`;
   gameplayEl.scrollTop = gameplayEl.scrollHeight;
+  const player = players[0];
+  player.activeHints.forEach(hint => hint.evaluate(grid, grid.store.get(selectedHex), habitat.checked));
+  gatherAndRender();
 });
 gatherAndRender();
-},{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts","./player":"playground/player.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts","./player":"playground/player.ts","./terrain":"playground/terrain.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2437,7 +2637,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51762" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49496" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
