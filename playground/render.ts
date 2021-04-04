@@ -35,13 +35,12 @@ const fillHexagon = (hex: HexWithTerrain) => {
   // draw.group().add(polygon)
   return ` 
     <polygon class='js-highlightHex' points='${hex.corners
-    .map(({ x, y }) => `${x},${y}`)
-    .join(',')}' fill='${fill}'></polygon>
+      .map(({ x, y }) => `${x},${y}`)
+      .join(',')}' fill='${fill}'></polygon>
   `
 }
 
-export type ActiveType = null | boolean
-export type HexWithTerrain = Hex & { terrain: Tile; isActive: ActiveType }
+export type HexWithTerrain = Hex & { terrain: Tile; isActive: boolean }
 
 const BORDER_DISTANCE = 3
 const DX = [-0.75, -1, -0.75, 0.75, 1, 0.75]
@@ -55,10 +54,10 @@ const addBearsAndCougars = (hex: HexWithTerrain) => {
 
   return `
     <polygon points='${hex.corners.map(({ x, y }, i) => {
-    x += BORDER_DISTANCE * DX[i]
-    y += BORDER_DISTANCE * DY[i]
-    return `${x},${y}`
-  })}' fill='none' stroke-width='1.5' stroke='${color}' />
+      x += BORDER_DISTANCE * DX[i]
+      y += BORDER_DISTANCE * DY[i]
+      return `${x},${y}`
+    })}' fill='none' stroke-width='1.5' stroke='${color}' />
   `
 }
 
@@ -83,8 +82,7 @@ const addCoordinates = (hex: Hex) => {
   `
 }
 
-export const highlightSelectedHex = (hex?: Hex) => {
-  if (!hex) return ''
+export const highlightSelectedHex = (hex: Hex) => {
   const graphicsEl = mapWrapperEl.querySelector(`g[data-hex="${hex.q},${hex.r}"]`)
   if (!graphicsEl) return ''
 
@@ -93,18 +91,35 @@ export const highlightSelectedHex = (hex?: Hex) => {
 
   graphicsEl.innerHTML += `
     <polygon highlighted points='${hex.corners.map(({ x, y }, i) => {
-    x += (BORDER_DISTANCE * DX[i]) / 3
-    y += (BORDER_DISTANCE * DY[i]) / 3
-    return `${x},${y}`
-  })}' fill='none' stroke-width='2' stroke='#fff' />
+      x += (BORDER_DISTANCE * DX[i]) / 3
+      y += (BORDER_DISTANCE * DY[i]) / 3
+      return `${x},${y}`
+    })}' fill='none' stroke-width='2' stroke='#fff' />
   `
 }
 
+const addSteppingStone = (hex: HexWithTerrain) => {
+  if (!hex.terrain.hasSteppingStone()) return ''
+  console.log('stepping new stepping stone')
+  const steppingStone = `
+    <polygon points='${hex.corners.map(({ x, y }, i) => {
+      x += (BORDER_DISTANCE * DX[i]) / 3
+      y += (BORDER_DISTANCE * DY[i]) / 3
+      return `${x},${y}`
+    })}' fill='${hex.terrain.steppingStoneColor}' />
+  `
+  console.log(steppingStone)
+  return steppingStone
+}
+
 export const render = (hex: HexWithTerrain): string => {
+  if (hex.toString() === '0,0') console.log('hex rendering', hex.terrain.type)
   let result = ''
   result += fillHexagon(hex)
   result += addBearsAndCougars(hex)
   result += addCoordinates(hex)
+  result += addSteppingStone(hex)
+  // result += addAbandonedShack(hex)
   result += highlightSelectedHex(hex)
   return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive ? '1' : '0.5'}'>${result}</g>`
 }

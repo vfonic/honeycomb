@@ -1,6 +1,6 @@
 import { HexWithTerrain, highlightSelectedHex, renderAll } from './render'
 import { tilesToArray } from './tiles'
-import { createHexPrototype, Grid, rectangle } from '../src'
+import { cloneHex, createHexPrototype, Grid, rectangle } from '../src'
 import { Player } from './player'
 import { Tile } from './terrain'
 
@@ -13,13 +13,13 @@ const hexPrototype = createHexPrototype<HexWithTerrain>({
 })
 
 let grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 }))
-grid.run()
+// grid.run()
 // .traverse([at({ q: 0, r: 0 }), move(Compass.SE), move(Compass.NE)])
 // .filter(inStore)
 // .each(render)
 // .run()
 
-let selectedHex = '0,0'
+let selectedHexKey = '0,0'
 let numberOfPlayers = (document.querySelector('#number-of-players') as HTMLInputElement).value
 
 const players: Player[] = []
@@ -29,7 +29,7 @@ for (let i = 0; i < numberOfPlayers.length; i++) {
 
 const renderTiles = (hexagonsOrdered: HexWithTerrain[]) => {
   renderAll(hexagonsOrdered)
-  highlightSelectedHex(grid.store.get(selectedHex))
+  highlightSelectedHex(grid.store.get(selectedHexKey)!)
 }
 
 const printActiveHintsForPlayer = (player: Player) => {
@@ -71,11 +71,12 @@ const gatherAndRender = () => {
   const tilesInArray = tilesToArray(values)
 
   let index = 0
-  grid = grid.each((hex) => {
-    hex.terrain = new Tile(tilesInArray[index++])
-    hexagonsOrdered.push(hex)
-  })
-  grid.run()
+  grid = grid
+    .each((hex) => {
+      hex.terrain = new Tile(tilesInArray[index++])
+      hexagonsOrdered.push(hex)
+    })
+    .run()
 
   printActiveHintsForPlayer(players[0])
   setIsActive(hexagonsOrdered)
@@ -90,8 +91,8 @@ document.addEventListener('click', (e) => {
   const hexEl = (clickEl && clickEl.closest('[data-hex]')) as HTMLElement
   if (!hexEl) return
 
-  selectedHex = hexEl.dataset.hex || '0,0'
-  const hex = grid.store.get(selectedHex)!
+  selectedHexKey = hexEl.dataset.hex || '0,0'
+  const hex = grid.store.get(selectedHexKey)!
   highlightSelectedHex(hex)
 })
 
@@ -99,11 +100,40 @@ document.querySelector('.js-submit')?.addEventListener('click', () => {
   const gameplayEl = document.getElementById('gameplay')! as HTMLInputElement
   const playerColor = (document.querySelector('select[name="player"]')! as HTMLInputElement).value
   const habitat = document.querySelector('input[name="habitat"]')! as HTMLInputElement
-  gameplayEl.value += `${playerColor} ${selectedHex} ${habitat.checked ? '✅' : '⛔️'}\n`
+  gameplayEl.value += `${playerColor} ${selectedHexKey} ${habitat.checked ? '✅' : '⛔️'}\n`
   gameplayEl.scrollTop = gameplayEl.scrollHeight
 
   const player = players[0]
-  player.activeHints.forEach((hint) => hint.evaluate(grid, grid.store.get(selectedHex)!, habitat.checked))
+  player.activeHints.forEach((hint) => hint.evaluate(grid, grid.store.get(selectedHexKey)!, habitat.checked))
+
+  gatherAndRender()
+})
+
+document.querySelector('.js-initialHint')!.addEventListener('input', () => {
+  const hintSelected = (document.querySelector('.js-initialHint')! as HTMLInputElement).value
+  players.forEach((player) => player.hints.forEach((hint) => (hint.isActive = hint.name !== hintSelected)))
+})
+
+document.querySelector('.js-placeStandingStone')!.addEventListener('click', () => {
+  const stoneColor = (document.getElementById('standing-stone-color')! as HTMLInputElement).value
+
+  const hex = grid.store.get(selectedHexKey)!
+  const newHex = cloneHex(hex)
+  newHex.terrain = new Tile(`${newHex.terrain.type} ${stoneColor}-stepping-stone`)
+  // hex.terrain.type += ` ${stoneColor}-stepping-stone`
+  grid = grid.update((grid) => {
+    // grid.store.set(selectedHexKey, newHex)
+    grid.store = new Map(grid.hexes().map((hex) => [hex.toString(), hex.toString() === selectedHexKey ? newHex : hex]))
+  })
+  // console.log('hex from store:', grid.store.get(selectedHexKey)!.terrain.type)
+  // grid = grid
+  //   .map((hex) => {
+  //     if (hex.toString() !== selectedHexKey) return
+  //     // console.log(hex.terrain)
+  //     hex.terrain.type += ` ${stoneColor}-stepping-stone`
+  //     console.log('hex inside: ', hex.terrain.type)
+  //   })
+  //   .run()
 
   gatherAndRender()
 })

@@ -34,4 +34,18 @@ export class Tile {
   hasCougars() {
     return this.type.includes('cougars')
   }
+
+  hasSteppingStone() {
+    return this.type.includes('stepping-stone')
+  }
+
+  get steppingStoneColor() {
+    const types = this.type.split(' ')
+    const steppingStone = types[types.length - 1]
+    return steppingStone.split('-')[0]
+  }
+
+  hasAbandonedShack() {
+    return this.type.includes('abandoned-shack')
+  }
 }

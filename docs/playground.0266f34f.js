@@ -209,7 +209,6 @@ const addCoordinates = hex => {
 };
 
 const highlightSelectedHex = hex => {
-  if (!hex) return '';
   const graphicsEl = mapWrapperEl.querySelector(`g[data-hex="${hex.q},${hex.r}"]`);
   if (!graphicsEl) return '';
   const oldHighlightedEl = mapWrapperEl.querySelector('polygon[highlighted]');
@@ -228,11 +227,31 @@ const highlightSelectedHex = hex => {
 
 exports.highlightSelectedHex = highlightSelectedHex;
 
+const addSteppingStone = hex => {
+  if (!hex.terrain.hasSteppingStone()) return '';
+  console.log('stepping new stepping stone');
+  const steppingStone = `
+    <polygon points='${hex.corners.map(({
+    x,
+    y
+  }, i) => {
+    x += BORDER_DISTANCE * DX[i] / 3;
+    y += BORDER_DISTANCE * DY[i] / 3;
+    return `${x},${y}`;
+  })}' fill='${hex.terrain.steppingStoneColor}' />
+  `;
+  console.log(steppingStone);
+  return steppingStone;
+};
+
 const render = hex => {
+  if (hex.toString() === '0,0') console.log('hex rendering', hex.terrain.type);
   let result = '';
   result += fillHexagon(hex);
   result += addBearsAndCougars(hex);
   result += addCoordinates(hex);
+  result += addSteppingStone(hex); // result += addAbandonedShack(hex)
+
   result += highlightSelectedHex(hex);
   return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive ? '1' : '0.5'}'>${result}</g>`;
 };
@@ -2392,141 +2411,125 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.Hint = exports.ALL_HINTS = void 0;
-// type Hint = {
-//   isActive: ActiveType
-//   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain) => boolean
-//   evaluate: (hex: HexWithTerrain, isHabitat: boolean) => void
-//   name: string
-// }
-const ON_FOREST_OR_DESERT = 0;
-const ON_FOREST_OR_WATER = 1;
-const ON_FOREST_OR_SWAMP = 2;
-const ON_FOREST_OR_MOUNTAIN = 3;
-const ON_DESERT_OR_WATER = 4;
-const ON_DESERT_OR_SWAMP = 5;
-const ON_DESERT_OR_MOUNTAIN = 6;
-const ON_WATER_OR_SWAMP = 7;
-const ON_WATER_OR_MOUNTAIN = 8;
-const ON_SWAMP_OR_MOUNTAIN = 9;
 const ALL_HINTS = [{
   isPossibleOnHex: (grid, hex) => hex.terrain.isForest() || hex.terrain.isDesert(),
-  name: 'on forest or desert'
+  name: 'On forest or desert'
 }, {
   isPossibleOnHex: (grid, hex) => hex.terrain.isForest() || hex.terrain.isWater(),
-  name: 'on forest or water'
+  name: 'On forest or water'
 }, {
   isPossibleOnHex: (grid, hex) => hex.terrain.isForest() || hex.terrain.isSwamp(),
-  name: 'on forest or swamp'
+  name: 'On forest or swamp'
 }, {
   isPossibleOnHex: (grid, hex) => hex.terrain.isForest() || hex.terrain.isMountain(),
-  name: 'on forest or mountain'
+  name: 'On forest or mountain'
 }, {
   isPossibleOnHex: (grid, hex) => hex.terrain.isDesert() || hex.terrain.isWater(),
-  name: 'on desert or water'
+  name: 'On desert or water'
 }, {
   isPossibleOnHex: (grid, hex) => hex.terrain.isDesert() || hex.terrain.isSwamp(),
-  name: 'on desert or swamp'
+  name: 'On desert or swamp'
 }, {
   isPossibleOnHex: (grid, hex) => hex.terrain.isDesert() || hex.terrain.isMountain(),
-  name: 'on desert or mountain'
+  name: 'On desert or mountain'
 }, {
   isPossibleOnHex: (grid, hex) => hex.terrain.isWater() || hex.terrain.isSwamp(),
-  name: 'on water or swamp'
+  name: 'On water or swamp'
 }, {
   isPossibleOnHex: (grid, hex) => hex.terrain.isWater() || hex.terrain.isMountain(),
-  name: 'on water or mountain'
+  name: 'On water or mountain'
 }, {
   isPossibleOnHex: (grid, hex) => hex.terrain.isSwamp() || hex.terrain.isMountain(),
-  name: 'on swamp or mountain'
+  name: 'On swamp or mountain'
 }, {
   isPossibleOnHex: (grid, hex) => {
     const hexes = grid.hexesInRange(hex, 1);
     return hexes.some(hex => hex.terrain.isForest());
   },
-  name: 'within one space of forest'
+  name: 'Within one space of forest'
 }, {
   isPossibleOnHex: (grid, hex) => {
     const hexes = grid.hexesInRange(hex, 1);
     return hexes.some(hex => hex.terrain.isDesert());
   },
-  name: 'within one space of desert'
+  name: 'Within one space of desert'
 }, {
   isPossibleOnHex: (grid, hex) => {
     const hexes = grid.hexesInRange(hex, 1);
     return hexes.some(hex => hex.terrain.isSwamp());
   },
-  name: 'within one space of swamp'
+  name: 'Within one space of swamp'
 }, {
   isPossibleOnHex: (grid, hex) => {
     const hexes = grid.hexesInRange(hex, 1);
     return hexes.some(hex => hex.terrain.isMountain());
   },
-  name: 'within one space of mountain'
+  name: 'Within one space of mountain'
 }, {
   isPossibleOnHex: (grid, hex) => {
     const hexes = grid.hexesInRange(hex, 1);
     return hexes.some(hex => hex.terrain.isWater());
   },
-  name: 'within one space of water'
+  name: 'Within one space of water'
 }, {
   isPossibleOnHex: (grid, hex) => {
     const hexes = grid.hexesInRange(hex, 1);
     return hexes.some(hex => hex.terrain.hasBears() || hex.terrain.hasCougars());
   },
-  name: 'within one space of either animal territory'
+  name: 'Within one space of either animal territory'
 }, // {
 //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
 //     const hexes = grid.hexesInRange(hex, 1)
 //     return hexes.some((hex) => hex.terrain.hasBears() || hex.terrain.hasCougars())
 //   },
-//   name: 'within two spaces of a standing stone',
+//   name: 'Within two spaces of a standing stone',
 // },
 // {
 //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
 //     const hexes = grid.hexesInRange(hex, 1)
 //     return hexes.some((hex) => hex.terrain.hasBears() || hex.terrain.hasCougars())
 //   },
-//   name: 'within two spaces of an abandoned shack',
+//   name: 'Within two spaces of an abandoned shack',
 // },
 {
   isPossibleOnHex: (grid, hex) => {
     const hexes = grid.hexesInRange(hex, 2);
     return hexes.some(hex => hex.terrain.hasBears());
   },
-  name: 'within two spaces of bear territory'
+  name: 'Within two spaces of bear territory'
 }, {
   isPossibleOnHex: (grid, hex) => {
     const hexes = grid.hexesInRange(hex, 2);
     return hexes.some(hex => hex.terrain.hasCougars());
   },
-  name: 'within two spaces of cougar territory'
+  name: 'Within two spaces of cougar territory'
 } // {
 //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
 //     const hexes = grid.hexesInRange(hex, 3)
 //     return hexes.some((hex) => hex.terrain.hasCougars())
 //   },
-//   name: 'within three spaces of a blue structure',
+//   name: 'Within three spaces of a blue structure',
 // },
 // {
 //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
 //     const hexes = grid.hexesInRange(hex, 3)
 //     return hexes.some((hex) => hex.terrain.hasCougars())
 //   },
-//   name: 'within three spaces of a white structure',
+//   name: 'Within three spaces of a white structure',
 // },
 // {
 //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
 //     const hexes = grid.hexesInRange(hex, 3)
 //     return hexes.some((hex) => hex.terrain.hasCougars())
 //   },
-//   name: 'within three spaces of a green structure',
+//   name: 'Within three spaces of a green structure',
 // },
 // {
 //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
 //     const hexes = grid.hexesInRange(hex, 3)
 //     return hexes.some((hex) => hex.terrain.hasCougars())
 //   },
-//   name: 'within three spaces of a black structure',
+//   name: 'Within three spaces of a black structure',
 // },
 ];
 exports.ALL_HINTS = ALL_HINTS;
@@ -2614,6 +2617,20 @@ class Tile {
     return this.type.includes('cougars');
   }
 
+  hasSteppingStone() {
+    return this.type.includes('stepping-stone');
+  }
+
+  get steppingStoneColor() {
+    const types = this.type.split(' ');
+    const steppingStone = types[types.length - 1];
+    return steppingStone.split('-')[0];
+  }
+
+  hasAbandonedShack() {
+    return this.type.includes('abandoned-shack');
+  }
+
 }
 
 exports.Tile = Tile;
@@ -2644,13 +2661,13 @@ const hexPrototype = (0, _src.createHexPrototype)({
 let grid = new _src.Grid(hexPrototype, (0, _src.rectangle)({
   width: 12,
   height: 9
-}));
-grid.run(); // .traverse([at({ q: 0, r: 0 }), move(Compass.SE), move(Compass.NE)])
+})); // grid.run()
+// .traverse([at({ q: 0, r: 0 }), move(Compass.SE), move(Compass.NE)])
 // .filter(inStore)
 // .each(render)
 // .run()
 
-let selectedHex = '0,0';
+let selectedHexKey = '0,0';
 let numberOfPlayers = document.querySelector('#number-of-players').value;
 const players = [];
 
@@ -2660,7 +2677,7 @@ for (let i = 0; i < numberOfPlayers.length; i++) {
 
 const renderTiles = hexagonsOrdered => {
   (0, _render.renderAll)(hexagonsOrdered);
-  (0, _render.highlightSelectedHex)(grid.store.get(selectedHex));
+  (0, _render.highlightSelectedHex)(grid.store.get(selectedHexKey));
 };
 
 const printActiveHintsForPlayer = player => {
@@ -2698,8 +2715,7 @@ const gatherAndRender = () => {
   grid = grid.each(hex => {
     hex.terrain = new _terrain.Tile(tilesInArray[index++]);
     hexagonsOrdered.push(hex);
-  });
-  grid.run();
+  }).run();
   printActiveHintsForPlayer(players[0]);
   setIsActive(hexagonsOrdered);
   renderTiles(hexagonsOrdered);
@@ -2711,18 +2727,43 @@ document.addEventListener('click', e => {
   const clickEl = e.target;
   const hexEl = clickEl && clickEl.closest('[data-hex]');
   if (!hexEl) return;
-  selectedHex = hexEl.dataset.hex || '0,0';
-  const hex = grid.store.get(selectedHex);
+  selectedHexKey = hexEl.dataset.hex || '0,0';
+  const hex = grid.store.get(selectedHexKey);
   (0, _render.highlightSelectedHex)(hex);
 });
 (_document$querySelect = document.querySelector('.js-submit')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', () => {
   const gameplayEl = document.getElementById('gameplay');
   const playerColor = document.querySelector('select[name="player"]').value;
   const habitat = document.querySelector('input[name="habitat"]');
-  gameplayEl.value += `${playerColor} ${selectedHex} ${habitat.checked ? '✅' : '⛔️'}\n`;
+  gameplayEl.value += `${playerColor} ${selectedHexKey} ${habitat.checked ? '✅' : '⛔️'}\n`;
   gameplayEl.scrollTop = gameplayEl.scrollHeight;
   const player = players[0];
-  player.activeHints.forEach(hint => hint.evaluate(grid, grid.store.get(selectedHex), habitat.checked));
+  player.activeHints.forEach(hint => hint.evaluate(grid, grid.store.get(selectedHexKey), habitat.checked));
+  gatherAndRender();
+});
+document.querySelector('.js-initialHint').addEventListener('input', () => {
+  const hintSelected = document.querySelector('.js-initialHint').value;
+  players.forEach(player => player.hints.forEach(hint => hint.isActive = hint.name !== hintSelected));
+});
+document.querySelector('.js-placeStandingStone').addEventListener('click', () => {
+  const stoneColor = document.getElementById('standing-stone-color').value;
+  const hex = grid.store.get(selectedHexKey);
+  const newHex = (0, _src.cloneHex)(hex);
+  newHex.terrain = new _terrain.Tile(`${newHex.terrain.type} ${stoneColor}-stepping-stone`); // hex.terrain.type += ` ${stoneColor}-stepping-stone`
+
+  grid = grid.update(grid => {
+    // grid.store.set(selectedHexKey, newHex)
+    grid.store = new Map(grid.hexes().map(hex => [hex.toString(), hex.toString() === selectedHexKey ? newHex : hex]));
+  }); // console.log('hex from store:', grid.store.get(selectedHexKey)!.terrain.type)
+  // grid = grid
+  //   .map((hex) => {
+  //     if (hex.toString() !== selectedHexKey) return
+  //     // console.log(hex.terrain)
+  //     hex.terrain.type += ` ${stoneColor}-stepping-stone`
+  //     console.log('hex inside: ', hex.terrain.type)
+  //   })
+  //   .run()
+
   gatherAndRender();
 });
 gatherAndRender();

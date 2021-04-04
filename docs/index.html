@@ -51,7 +51,7 @@
 
             <div class="mt-3 col-6">
               <label for="initial-hint" class="form-label">Initial hint</label>
-              <input class="form-control" list="hints" id="initial-hint" placeholder="Type to search...">
+              <input class="form-control js-initialHint" list="hints" id="initial-hint" placeholder="Type to search...">
               <datalist id="hints">
                 <option value="On forest or desert"></option>
                 <option value="On forest or water"></option>
@@ -79,11 +79,28 @@
                 <option value="Within three spaces of a blue structure"></option>
                 <option value="Within three spaces of a white structure"></option>
                 <option value="Within three spaces of a green structure"></option>
-                <!-- <option value="Within three spaces of a black structure"></option>-->
+                <!-- <option value="Within three spaces of a black structure"></option> -->
               </datalist>
             </div>
-
             <div class="col-6"></div>
+            <div class="mt-3 col-12">
+              <select name="standing-stone-color" id="standing-stone-color">
+                <option value="Blue">Blue Standing Stone</option>
+                <option value="White">White Standing Stone</option>
+                <option value="Green">Green Standing Stone</option>
+              </select>
+              <button type="button" class="btn btn-secondary btn-sm js-placeStandingStone">Place standing stone</button>
+            </div>
+            <div class="mt-3 col-12">
+              <select name="abandoned-shack-color" id="abandoned-shack-color">
+                <option value="Blu Abandoned Shacke">Blue Abandoned Shack</option>
+                <option value="White Abandoned Shack">White Abandoned Shack</option>
+                <option value="Green Abandoned Shack">Green Abandoned Shack</option>
+              </select>
+              <button type="button" class="mt-1 btn btn-secondary btn-sm js-placeAbandonedShack">
+                Place abandoned shack
+              </button>
+            </div>
 
             <div class="mt-3 col-12">
               <label for="gameplay" class="form-label" style="display: block">Gameplay</label>
