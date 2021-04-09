@@ -48,4 +48,22 @@ export class Tile {
   hasAbandonedShack() {
     return this.type.includes('abandoned-shack')
   }
+
+  get abandonedShackColor() {
+    const types = this.type.split(' ')
+    const abandonedShack = types[types.length - 1]
+    return abandonedShack.split('-')[0]
+  }
+
+  hasBlueStructure() {
+    return this.type.includes('Blue')
+  }
+
+  hasGreenStructure() {
+    return this.type.includes('Green')
+  }
+
+  hasWhiteStructure() {
+    return this.type.includes('White')
+  }
 }

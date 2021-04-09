@@ -2,6 +2,7 @@ import { ALL_HINTS, Hint } from './hint'
 
 export class Player {
   hints: Hint[]
+  name?: string
 
   constructor() {
     this.hints = ALL_HINTS.map((hintParams) => new Hint(hintParams))

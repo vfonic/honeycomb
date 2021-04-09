@@ -1,27 +1,20 @@
 import { Hex } from '../dist'
 import { Tile } from './terrain'
 
-// declare const SVG: any
-
-// const draw = SVG().addTo('.js-map').size('100%', '100%')
-
 const mapWrapperEl = document.querySelector('.js-map')
-if (!mapWrapperEl) {
-  throw new Error('Map element not found')
-}
+if (!mapWrapperEl) throw new Error('Map element not found')
 
-export const renderAll = (hexes: HexWithTerrain[]) => {
-  mapWrapperEl.innerHTML = `
+export const renderAll = (hexes: HexWithTerrain[]) =>
+  (mapWrapperEl.innerHTML = `
     <svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='555px' height='494px'>
         ${hexes.map((hex) => render(hex)).join('')}
     </svg>
-  `
-}
+  `)
 
 const fillHexagon = (hex: HexWithTerrain) => {
   let fill = 'none'
   if (hex.terrain.isForest()) {
-    fill = '#009900'
+    fill = '#63d6a3'
   } else if (hex.terrain.isWater()) {
     fill = '#2596be'
   } else if (hex.terrain.isDesert()) {
@@ -31,8 +24,6 @@ const fillHexagon = (hex: HexWithTerrain) => {
   } else if (hex.terrain.isSwamp()) {
     fill = 'purple'
   }
-  // const polygon = draw.polygon(hex.corners.map(({ x, y }) => `${x},${y}`)).fill(fill)
-  // draw.group().add(polygon)
   return ` 
     <polygon class='js-highlightHex' points='${hex.corners
       .map(({ x, y }) => `${x},${y}`)
@@ -46,9 +37,7 @@ const BORDER_DISTANCE = 3
 const DX = [-0.75, -1, -0.75, 0.75, 1, 0.75]
 const DY = [0.75, 0, -0.75, -0.75, 0, 0.75]
 const addBearsAndCougars = (hex: HexWithTerrain) => {
-  if (!hex.terrain.hasBears() && !hex.terrain.hasCougars()) {
-    return ''
-  }
+  if (!hex.terrain.hasBears() && !hex.terrain.hasCougars()) return ''
 
   const color = hex.terrain.hasBears() ? '#000' : '#b00'
 
@@ -61,18 +50,9 @@ const addBearsAndCougars = (hex: HexWithTerrain) => {
   `
 }
 
-const addCoordinates = (hex: Hex) => {
-  // const text = draw
-  //   .text(`${hex.q},${hex.r}`)
-  //   // .text(`${hex.col},${hex.row}`)
-  //   .font({
-  //     size: hex.width * 0.25,
-  //     anchor: 'middle',
-  //     'dominant-baseline': 'central',
-  //     leading: 0,
-  //   })
-  //   .translate(hex.x, hex.y)
-  // draw.add(text)
+const addCoordinates = (hex: HexWithTerrain) => {
+  if (hex.terrain.hasSteppingStone() || hex.terrain.hasAbandonedShack()) return ''
+
   return `
     <text font-size='${hex.width * 0.25}' text-anchor='middle' dominant-baseline='central' transform='matrix(1,0,0,1,${
     hex.x
@@ -100,26 +80,41 @@ export const highlightSelectedHex = (hex: Hex) => {
 
 const addSteppingStone = (hex: HexWithTerrain) => {
   if (!hex.terrain.hasSteppingStone()) return ''
-  console.log('stepping new stepping stone')
-  const steppingStone = `
-    <polygon points='${hex.corners.map(({ x, y }, i) => {
-      x += (BORDER_DISTANCE * DX[i]) / 3
-      y += (BORDER_DISTANCE * DY[i]) / 3
-      return `${x},${y}`
-    })}' fill='${hex.terrain.steppingStoneColor}' />
+
+  const width = hex.width / 9
+
+  return `
+    <circle cx='${hex.x - width}' cy='${hex.y - width}' r='${width}' fill='${hex.terrain.steppingStoneColor}' />
   `
-  console.log(steppingStone)
-  return steppingStone
+}
+
+const addAbandonedShack = (hex: HexWithTerrain) => {
+  if (!hex.terrain.hasAbandonedShack()) return ''
+
+  const width = hex.width / 4
+  const topY = hex.corners[0].y + width * 1.5
+  const topX = (hex.corners[5].x + hex.corners[0].x) / 2
+
+  const points = [
+    `${topX + width / 2},${topY}`,
+    hex.corners[2].x,
+    hex.corners[2].y - width,
+    hex.corners[3].x + width,
+    hex.corners[3].y - width,
+  ]
+
+  return `
+    <polygon points='${points}' fill='${hex.terrain.abandonedShackColor}'/>
+  `
 }
 
 export const render = (hex: HexWithTerrain): string => {
-  if (hex.toString() === '0,0') console.log('hex rendering', hex.terrain.type)
   let result = ''
   result += fillHexagon(hex)
   result += addBearsAndCougars(hex)
   result += addCoordinates(hex)
   result += addSteppingStone(hex)
-  // result += addAbandonedShack(hex)
+  result += addAbandonedShack(hex)
   result += highlightSelectedHex(hex)
   return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive ? '1' : '0.5'}'>${result}</g>`
 }

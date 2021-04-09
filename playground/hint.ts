@@ -96,20 +96,20 @@ export const ALL_HINTS = [
     name: 'Within one space of either animal territory',
   },
 
-  // {
-  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-  //     const hexes = grid.hexesInRange(hex, 1)
-  //     return hexes.some((hex) => hex.terrain.hasBears() || hex.terrain.hasCougars())
-  //   },
-  //   name: 'Within two spaces of a standing stone',
-  // },
-  // {
-  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-  //     const hexes = grid.hexesInRange(hex, 1)
-  //     return hexes.some((hex) => hex.terrain.hasBears() || hex.terrain.hasCougars())
-  //   },
-  //   name: 'Within two spaces of an abandoned shack',
-  // },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 2)
+      return hexes.some((hex) => hex.terrain.hasSteppingStone())
+    },
+    name: 'Within two spaces of a standing stone',
+  },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 2)
+      return hexes.some((hex) => hex.terrain.hasAbandonedShack())
+    },
+    name: 'Within two spaces of an abandoned shack',
+  },
   {
     isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
       const hexes = grid.hexesInRange(hex, 2)
@@ -125,31 +125,31 @@ export const ALL_HINTS = [
     name: 'Within two spaces of cougar territory',
   },
 
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 3)
+      return hexes.some((hex) => hex.terrain.hasBlueStructure())
+    },
+    name: 'Within three spaces of a blue structure',
+  },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 3)
+      return hexes.some((hex) => hex.terrain.hasWhiteStructure())
+    },
+    name: 'Within three spaces of a white structure',
+  },
+  {
+    isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
+      const hexes = grid.hexesInRange(hex, 3)
+      return hexes.some((hex) => hex.terrain.hasGreenStructure())
+    },
+    name: 'Within three spaces of a green structure',
+  },
   // {
   //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
   //     const hexes = grid.hexesInRange(hex, 3)
-  //     return hexes.some((hex) => hex.terrain.hasCougars())
-  //   },
-  //   name: 'Within three spaces of a blue structure',
-  // },
-  // {
-  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-  //     const hexes = grid.hexesInRange(hex, 3)
-  //     return hexes.some((hex) => hex.terrain.hasCougars())
-  //   },
-  //   name: 'Within three spaces of a white structure',
-  // },
-  // {
-  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-  //     const hexes = grid.hexesInRange(hex, 3)
-  //     return hexes.some((hex) => hex.terrain.hasCougars())
-  //   },
-  //   name: 'Within three spaces of a green structure',
-  // },
-  // {
-  //   isPossibleOnHex: (grid: Grid<HexWithTerrain>, hex: HexWithTerrain): boolean => {
-  //     const hexes = grid.hexesInRange(hex, 3)
-  //     return hexes.some((hex) => hex.terrain.hasCougars())
+  //     return hexes.some((hex) => hex.terrain.hasBlackStructure())
   //   },
   //   name: 'Within three spaces of a black structure',
   // },
