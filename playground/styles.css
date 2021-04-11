@@ -33,3 +33,10 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+
+.output-area {
+  min-height: 100px;
+  background: #fff;
+  color: #222;
+  column-count: 3;
+}

@@ -123,7 +123,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.render = exports.highlightSelectedHex = exports.renderAll = void 0;
+exports.render = exports.highlightPossibleHexes = exports.highlightSelectedHex = exports.renderAll = void 0;
 const mapWrapperEl = document.querySelector('.js-map');
 if (!mapWrapperEl) throw new Error('Map element not found');
 
@@ -139,11 +139,11 @@ const fillHexagon = hex => {
   let fill = 'none';
 
   if (hex.terrain.isForest()) {
-    fill = '#63d6a3';
+    fill = '#33aa44';
   } else if (hex.terrain.isWater()) {
     fill = '#2596be';
   } else if (hex.terrain.isDesert()) {
-    fill = '#ffcc00';
+    fill = '#ffc549';
   } else if (hex.terrain.isMountain()) {
     fill = 'gray';
   } else if (hex.terrain.isSwamp()) {
@@ -205,6 +205,25 @@ const highlightSelectedHex = hex => {
 
 exports.highlightSelectedHex = highlightSelectedHex;
 
+const highlightPossibleHexes = hexes => {
+  hexes.forEach(hex => {
+    const graphicsEl = mapWrapperEl.querySelector(`g[data-hex="${hex.q},${hex.r}"]`);
+    if (!graphicsEl) return '';
+    graphicsEl.innerHTML += `
+      <polygon class='possible-hex js-possibleHex' points='${hex.corners.map(({
+      x,
+      y
+    }, i) => {
+      x += BORDER_DISTANCE * DX[i] / 3.5;
+      y += BORDER_DISTANCE * DY[i] / 3.5;
+      return `${x},${y}`;
+    })}' fill='none' stroke-width='5' stroke='#f76bff' />
+    `;
+  });
+};
+
+exports.highlightPossibleHexes = highlightPossibleHexes;
+
 const addSteppingStone = hex => {
   if (!hex.terrain.hasSteppingStone()) return '';
   const width = hex.width / 9;
@@ -231,8 +250,8 @@ const render = hex => {
   result += addCoordinates(hex);
   result += addSteppingStone(hex);
   result += addAbandonedShack(hex);
-  result += highlightSelectedHex(hex);
-  return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive ? '1' : '0.5'}'>${result}</g>`;
+  highlightSelectedHex(hex);
+  return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive === false ? '0.5' : '1'}'>${result}</g>`;
 };
 
 exports.render = render;
@@ -2527,6 +2546,10 @@ class Hint {
     }
   }
 
+  toString() {
+    return this.name;
+  }
+
 }
 
 exports.Hint = Hint;
@@ -2643,6 +2666,8 @@ var _player = require("./player");
 
 var _terrain = require("./terrain");
 
+var _hint = require("./hint");
+
 var _document$querySelect;
 
 const hexPrototype = (0, _src.createHexPrototype)({
@@ -2666,10 +2691,23 @@ const renderTiles = hexagonsOrdered => {
 };
 
 const printActiveHintsForPlayers = () => {
-  players.forEach(player => console.log(player.activeHints.map(h => h.name).join(', ')));
+  players.forEach(player => {
+    console.log(`${player.name}:`);
+    console.log(player.activeHints.map(h => h.name).join('\n'));
+    console.log('');
+  });
 };
 
-const setIsActive = hexagonsOrdered => {
+const renderPlayerHints = () => {
+  players.forEach((player, i) => {
+    document.querySelector('.js-player-' + i).innerHTML = `
+      <h4>${players[i].name}</h4>
+      ${player.activeHints.map(hint => `<div>${hint}</div>`).join('')}
+    `;
+  });
+};
+
+const setActiveHexes = (hexagonsOrdered, force = false) => {
   hexagonsOrdered.forEach(hex => {
     const allPlayersHintsArrays = [];
     players.forEach(player => {
@@ -2678,9 +2716,15 @@ const setIsActive = hexagonsOrdered => {
         const isPossibleOnHex = hint.isActive && hint.isPossibleOnHex(grid, hex);
         hintsArray = hintsArray * 2 + (isPossibleOnHex ? 1 : 0);
       });
-      allPlayersHintsArrays.push(hintsArray);
-    }); // we have all hints for all players,
+      hintsArray && allPlayersHintsArrays.push(hintsArray);
+    }); // if we skipped one player because he didn't have a single hint possible on the hex, hex is inactive
+
+    if (allPlayersHintsArrays.length !== players.length) {
+      hex.isActive = false;
+      return;
+    } // we have all hints for all players,
     // we need at least as many 1s as there are players
+
 
     const ones = allPlayersHintsArrays.reduce((accumulator, current) => accumulator | current, 0);
     const numberOfOnes = ones.toString(2).split('').reduce((accumulator, current) => accumulator + (current === '1' ? 1 : 0), 0);
@@ -2688,9 +2732,10 @@ const setIsActive = hexagonsOrdered => {
   });
 };
 
-const printBestHexToAsk = hexagonsOrdered => {
+const printAndHighlightBestHexes = hexagonsOrdered => {
   let maxNumberOfOnes = -1;
   let possibleHexes = [];
+  const allPossibleHexes = [];
   hexagonsOrdered.forEach(hex => {
     const allPlayersHintsArrays = [];
     players.forEach(player => {
@@ -2699,10 +2744,15 @@ const printBestHexToAsk = hexagonsOrdered => {
         const isPossibleOnHex = hint.isActive && hint.isPossibleOnHex(grid, hex);
         hintsArray = hintsArray * 2 + (isPossibleOnHex ? 1 : 0);
       });
-      allPlayersHintsArrays.push(hintsArray);
-    });
+      hintsArray && allPlayersHintsArrays.push(hintsArray);
+    }); // if we skipped one player because he didn't have a single hint possible on the hex, skip adding hex
+
+    if (allPlayersHintsArrays.length !== players.length) return; // count each possible hint only once:
+    // 1010 | 1100 = 1110 => 3x 1 (three active hints)
+
     const ones = allPlayersHintsArrays.reduce((accumulator, current) => accumulator | current, 0);
     const numberOfOnes = ones.toString(2).split('').reduce((accumulator, current) => accumulator + (current === '1' ? 1 : 0), 0);
+    allPossibleHexes.push(hex);
 
     if (numberOfOnes > maxNumberOfOnes) {
       maxNumberOfOnes = numberOfOnes;
@@ -2712,19 +2762,23 @@ const printBestHexToAsk = hexagonsOrdered => {
     if (numberOfOnes === maxNumberOfOnes) {
       possibleHexes.push(hex);
     }
-  });
-  console.log('Possible hexes:', possibleHexes.length);
-  const oneOfPossibleHexes = possibleHexes[Math.floor(Math.random() * possibleHexes.length)];
-  console.log('Possible hex:', oneOfPossibleHexes);
+  }); // remove past possible hexes
+
+  document.querySelectorAll('.js-possibleHex').forEach(el => el.remove());
+  (0, _render.highlightPossibleHexes)(possibleHexes);
+  const hexesInDivs = possibleHexes.map(hex => `<div>${hex}</div>`).join('');
+  document.getElementById('possible-hexes').innerHTML = hexesInDivs;
 };
 
-const gatherAndRender = () => {
+const gatherAndRender = (isGameStarted = false) => {
   const hexagonsOrdered = grid.hexes();
+  const hasGameStarted = isGameStarted || document.querySelector('.js-gameSetup').getAttribute('hidden') === '';
+  hasGameStarted && setActiveHexes(hexagonsOrdered);
+  renderPlayerHints();
   printActiveHintsForPlayers();
-  setIsActive(hexagonsOrdered);
   (0, _render.renderAll)(hexagonsOrdered);
   (0, _render.highlightSelectedHex)(grid.store.get(selectedHexKey));
-  printBestHexToAsk(hexagonsOrdered);
+  hasGameStarted && printAndHighlightBestHexes(hexagonsOrdered);
 };
 
 document.addEventListener('click', e => {
@@ -2734,12 +2788,33 @@ document.addEventListener('click', e => {
   selectedHexKey = hexEl.dataset.hex || '0,0';
   const hex = grid.store.get(selectedHexKey);
   (0, _render.highlightSelectedHex)(hex);
+  const allPlayersHintsArrays = [];
+  players.forEach(player => {
+    let hintsArray = 0;
+    player.activeHints.forEach(hint => {
+      const isPossibleOnHex = hint.isActive && hint.isPossibleOnHex(grid, hex);
+      hintsArray = hintsArray * 2 + (isPossibleOnHex ? 1 : 0);
+    });
+    hintsArray && allPlayersHintsArrays.push(hintsArray);
+  }); // if we skipped one player because he didn't have a single hint possible on the hex, skip adding hex
+
+  if (allPlayersHintsArrays.length !== players.length) return; // count each possible hint only once:
+  // 1010 | 1100 = 1110 => 3x 1 (three active hints)
+
+  const ones = allPlayersHintsArrays.reduce((accumulator, current) => accumulator | current, 0);
+  const onesStringBinary = ones.toString(2).padStart(_hint.ALL_HINTS.length, '0').split('');
+  console.log(onesStringBinary.join(''));
+  players[0].hints.forEach((hint, index) => {
+    if (onesStringBinary[index] === '1') {
+      console.log(hint.toString());
+    }
+  });
 });
 (_document$querySelect = document.querySelector('.js-submit')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', () => {
   const gameplayEl = document.getElementById('gameplay');
   const playerName = document.querySelector('select[name="player"]').value;
   const habitat = document.querySelector('input[name="habitat"]');
-  gameplayEl.value += `${playerName} ${selectedHexKey} ${habitat.checked ? '✅' : '⛔️'}\n`;
+  gameplayEl.innerHTML += `<div>${playerName} ${selectedHexKey} ${habitat.checked ? '✅' : '⛔️'}</div>`;
   gameplayEl.scrollTop = gameplayEl.scrollHeight;
   const player = players.find(player => player.name === playerName);
   player.activeHints.forEach(hint => hint.evaluate(grid, grid.store.get(selectedHexKey), habitat.checked));
@@ -2783,16 +2858,31 @@ document.querySelectorAll('.js-tilesPosition').forEach(el => el.addEventListener
 document.querySelectorAll('.js-tilesPositionCheckbox').forEach(el => el.addEventListener('change', renderMap));
 renderMap();
 document.querySelector('.js-startGame').addEventListener('click', () => {
+  // create players
   const numberOfPlayers = Number(document.querySelector('#number-of-players').value);
   players = [];
 
   for (let i = 0; i < numberOfPlayers; i++) {
     players.push(new _player.Player());
-  }
+  } // disable current player hint for other players
 
+
+  const currentPlayer = players[0];
   const hintSelected = document.querySelector('.js-initialHint').value;
   players.forEach(player => player.hints.forEach(hint => hint.isActive = hint.name !== hintSelected));
-  players[0].hints.forEach(hint => hint.isActive = hint.name === hintSelected);
+  currentPlayer.hints.forEach(hint => hint.isActive = hint.name === hintSelected); // disable all other hints that are not compatible with current player's hint
+  // for example, if current player has a hint "On forest or desert",
+  // another player cannot have "On water or swamp"
+  // because those two don't have shared tiles
+
+  const activeHint = currentPlayer.activeHints[0];
+  const activeHexes = grid.hexes().filter(hex => activeHint.isPossibleOnHex(grid, hex));
+  players.forEach(player => {
+    player.activeHints.forEach(hint => {
+      hint.isActive = activeHexes.some(hex => hint.isPossibleOnHex(grid, hex));
+    });
+  }); // render dropdown options
+
   const playerPlayingDropdown = document.querySelector('.js-playerPlaying');
 
   for (let i = 0; i < players.length; i++) {
@@ -2800,11 +2890,13 @@ document.querySelector('.js-startGame').addEventListener('click', () => {
     playerPlayingDropdown.innerHTML += '<option value="' + players[i].name + '">' + players[i].name + '</option>';
   }
 
+  renderPlayerHints(); // show gameplay
+
   document.querySelector('.js-gameSetup').setAttribute('hidden', '');
   document.querySelector('.js-gameplay').removeAttribute('hidden');
-  printBestHexToAsk(grid.hexes());
+  gatherAndRender(true); // printBestHexToAsk(grid.hexes())
 });
-},{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts","./player":"playground/player.ts","./terrain":"playground/terrain.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts","./player":"playground/player.ts","./terrain":"playground/terrain.ts","./hint":"playground/hint.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2832,7 +2924,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63223" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53463" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

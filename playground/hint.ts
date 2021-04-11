@@ -177,4 +177,8 @@ export class Hint {
       this.isActive = false
     }
   }
+
+  toString() {
+    return this.name
+  }
 }

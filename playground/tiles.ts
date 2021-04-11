@@ -3,7 +3,6 @@ export const D = 'desert',
   M = 'mountain',
   S = 'swamp',
   W = 'water',
-
   DB = 'desert bears',
   FB = 'forest bears',
   MB = 'mountain bears',

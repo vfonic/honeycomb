@@ -1,8 +1,9 @@
-import { HexWithTerrain, highlightSelectedHex, renderAll } from './render'
+import { HexWithTerrain, highlightPossibleHexes, highlightSelectedHex, renderAll } from './render'
 import { tilesToArray } from './tiles'
 import { cloneHex, createHexPrototype, Grid, rectangle } from '../src'
 import { Player } from './player'
 import { Tile } from './terrain'
+import { ALL_HINTS } from './hint'
 
 const hexPrototype = createHexPrototype<HexWithTerrain>({
   dimensions: { width: 60, height: 51.96 },
@@ -22,10 +23,23 @@ const renderTiles = (hexagonsOrdered: HexWithTerrain[]) => {
 }
 
 const printActiveHintsForPlayers = () => {
-  players.forEach((player) => console.log(player.activeHints.map((h) => h.name).join(', ')))
+  players.forEach((player) => {
+    console.log(`${player.name}:`)
+    console.log(player.activeHints.map((h) => h.name).join('\n'))
+    console.log('')
+  })
 }
 
-const setIsActive = (hexagonsOrdered: HexWithTerrain[]) => {
+const renderPlayerHints = () => {
+  players.forEach((player, i) => {
+    document.querySelector('.js-player-' + i)!.innerHTML = `
+      <h4>${players[i].name}</h4>
+      ${player.activeHints.map((hint) => `<div>${hint}</div>`).join('')}
+    `
+  })
+}
+
+const setActiveHexes = (hexagonsOrdered: HexWithTerrain[], force = false) => {
   hexagonsOrdered.forEach((hex) => {
     const allPlayersHintsArrays: number[] = []
     players.forEach((player) => {
@@ -34,8 +48,14 @@ const setIsActive = (hexagonsOrdered: HexWithTerrain[]) => {
         const isPossibleOnHex = hint.isActive && hint.isPossibleOnHex(grid, hex)
         hintsArray = hintsArray * 2 + (isPossibleOnHex ? 1 : 0)
       })
-      allPlayersHintsArrays.push(hintsArray)
+      hintsArray && allPlayersHintsArrays.push(hintsArray)
     })
+
+    // if we skipped one player because he didn't have a single hint possible on the hex, hex is inactive
+    if (allPlayersHintsArrays.length !== players.length) {
+      hex.isActive = false
+      return
+    }
 
     // we have all hints for all players,
     // we need at least as many 1s as there are players
@@ -48,9 +68,10 @@ const setIsActive = (hexagonsOrdered: HexWithTerrain[]) => {
   })
 }
 
-const printBestHexToAsk = (hexagonsOrdered: HexWithTerrain[]) => {
+const printAndHighlightBestHexes = (hexagonsOrdered: HexWithTerrain[]) => {
   let maxNumberOfOnes = -1
   let possibleHexes: HexWithTerrain[] = []
+  const allPossibleHexes: HexWithTerrain[] = []
 
   hexagonsOrdered.forEach((hex) => {
     const allPlayersHintsArrays: number[] = []
@@ -60,14 +81,23 @@ const printBestHexToAsk = (hexagonsOrdered: HexWithTerrain[]) => {
         const isPossibleOnHex = hint.isActive && hint.isPossibleOnHex(grid, hex)
         hintsArray = hintsArray * 2 + (isPossibleOnHex ? 1 : 0)
       })
-      allPlayersHintsArrays.push(hintsArray)
+      hintsArray && allPlayersHintsArrays.push(hintsArray)
     })
 
+    // if we skipped one player because he didn't have a single hint possible on the hex, skip adding hex
+    if (allPlayersHintsArrays.length !== players.length) return
+
+    // count each possible hint only once:
+    // 1010 | 1100 = 1110 => 3x 1 (three active hints)
     const ones = allPlayersHintsArrays.reduce((accumulator, current) => accumulator | current, 0)
+
     const numberOfOnes = ones
       .toString(2)
       .split('')
       .reduce((accumulator, current) => accumulator + (current === '1' ? 1 : 0), 0)
+
+    allPossibleHexes.push(hex)
+
     if (numberOfOnes > maxNumberOfOnes) {
       maxNumberOfOnes = numberOfOnes
       possibleHexes = []
@@ -77,19 +107,29 @@ const printBestHexToAsk = (hexagonsOrdered: HexWithTerrain[]) => {
     }
   })
 
-  console.log('Possible hexes:', possibleHexes.length)
-  const oneOfPossibleHexes = possibleHexes[Math.floor(Math.random() * possibleHexes.length)]
-  console.log('Possible hex:', oneOfPossibleHexes)
+  // remove past possible hexes
+  document.querySelectorAll('.js-possibleHex').forEach((el) => el.remove())
+
+  highlightPossibleHexes(possibleHexes)
+
+  const hexesInDivs = possibleHexes.map((hex) => `<div>${hex}</div>`).join('')
+  document.getElementById('possible-hexes')!.innerHTML = hexesInDivs
 }
 
-const gatherAndRender = () => {
+const gatherAndRender = (isGameStarted = false) => {
   const hexagonsOrdered = grid.hexes()
 
+  const hasGameStarted = isGameStarted || document.querySelector('.js-gameSetup')!.getAttribute('hidden') === ''
+
+  hasGameStarted && setActiveHexes(hexagonsOrdered)
+
+  renderPlayerHints()
+
   printActiveHintsForPlayers()
-  setIsActive(hexagonsOrdered)
   renderAll(hexagonsOrdered)
   highlightSelectedHex(grid.store.get(selectedHexKey)!)
-  printBestHexToAsk(hexagonsOrdered)
+
+  hasGameStarted && printAndHighlightBestHexes(hexagonsOrdered)
 }
 
 document.addEventListener('click', (e) => {
@@ -100,13 +140,38 @@ document.addEventListener('click', (e) => {
   selectedHexKey = hexEl.dataset.hex || '0,0'
   const hex = grid.store.get(selectedHexKey)!
   highlightSelectedHex(hex)
+
+  const allPlayersHintsArrays: number[] = []
+  players.forEach((player) => {
+    let hintsArray = 0
+    player.activeHints.forEach((hint) => {
+      const isPossibleOnHex = hint.isActive && hint.isPossibleOnHex(grid, hex)
+      hintsArray = hintsArray * 2 + (isPossibleOnHex ? 1 : 0)
+    })
+    hintsArray && allPlayersHintsArrays.push(hintsArray)
+  })
+
+  // if we skipped one player because he didn't have a single hint possible on the hex, skip adding hex
+  if (allPlayersHintsArrays.length !== players.length) return
+
+  // count each possible hint only once:
+  // 1010 | 1100 = 1110 => 3x 1 (three active hints)
+  const ones = allPlayersHintsArrays.reduce((accumulator, current) => accumulator | current, 0)
+
+  const onesStringBinary = ones.toString(2).padStart(ALL_HINTS.length, '0').split('')
+  console.log(onesStringBinary.join(''))
+  players[0].hints.forEach((hint, index) => {
+    if (onesStringBinary[index] === '1') {
+      console.log(hint.toString())
+    }
+  })
 })
 
 document.querySelector('.js-submit')?.addEventListener('click', () => {
-  const gameplayEl = document.getElementById('gameplay')! as HTMLInputElement
+  const gameplayEl = document.getElementById('gameplay')!
   const playerName = (document.querySelector('select[name="player"]')! as HTMLInputElement).value
   const habitat = document.querySelector('input[name="habitat"]')! as HTMLInputElement
-  gameplayEl.value += `${playerName} ${selectedHexKey} ${habitat.checked ? '✅' : '⛔️'}\n`
+  gameplayEl.innerHTML += `<div>${playerName} ${selectedHexKey} ${habitat.checked ? '✅' : '⛔️'}</div>`
   gameplayEl.scrollTop = gameplayEl.scrollHeight
 
   const player = players.find((player) => player.name === playerName)!
@@ -163,25 +228,45 @@ document.querySelectorAll('.js-tilesPositionCheckbox').forEach((el) => el.addEve
 renderMap()
 
 document.querySelector('.js-startGame')!.addEventListener('click', () => {
+  // create players
   const numberOfPlayers = Number((document.querySelector('#number-of-players') as HTMLInputElement).value!)
   players = []
   for (let i = 0; i < numberOfPlayers; i++) {
     players.push(new Player())
   }
 
+  // disable current player hint for other players
+  const currentPlayer = players[0]
   const hintSelected = (document.querySelector('.js-initialHint')! as HTMLInputElement).value
   players.forEach((player) => player.hints.forEach((hint) => (hint.isActive = hint.name !== hintSelected)))
-  players[0].hints.forEach((hint) => (hint.isActive = hint.name === hintSelected))
+  currentPlayer.hints.forEach((hint) => (hint.isActive = hint.name === hintSelected))
 
+  // disable all other hints that are not compatible with current player's hint
+  // for example, if current player has a hint "On forest or desert",
+  // another player cannot have "On water or swamp"
+  // because those two don't have shared tiles
+  const activeHint = currentPlayer.activeHints[0]
+  const activeHexes = grid.hexes().filter((hex) => activeHint.isPossibleOnHex(grid, hex))
+  players.forEach((player) => {
+    player.activeHints.forEach((hint) => {
+      hint.isActive = activeHexes.some((hex) => hint.isPossibleOnHex(grid, hex))
+    })
+  })
+
+  // render dropdown options
   const playerPlayingDropdown = document.querySelector('.js-playerPlaying')!
-
   for (let i = 0; i < players.length; i++) {
     players[i].name = (document.querySelector('input[name="player-' + i + '"]')! as HTMLInputElement).value
     playerPlayingDropdown.innerHTML += '<option value="' + players[i].name + '">' + players[i].name + '</option>'
   }
 
+  renderPlayerHints()
+
+  // show gameplay
   document.querySelector('.js-gameSetup')!.setAttribute('hidden', '')
   document.querySelector('.js-gameplay')!.removeAttribute('hidden')
 
-  printBestHexToAsk(grid.hexes())
+  gatherAndRender(true)
+
+  // printBestHexToAsk(grid.hexes())
 })

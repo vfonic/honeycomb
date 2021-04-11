@@ -14,11 +14,11 @@ export const renderAll = (hexes: HexWithTerrain[]) =>
 const fillHexagon = (hex: HexWithTerrain) => {
   let fill = 'none'
   if (hex.terrain.isForest()) {
-    fill = '#63d6a3'
+    fill = '#33aa44'
   } else if (hex.terrain.isWater()) {
     fill = '#2596be'
   } else if (hex.terrain.isDesert()) {
-    fill = '#ffcc00'
+    fill = '#ffc549'
   } else if (hex.terrain.isMountain()) {
     fill = 'gray'
   } else if (hex.terrain.isSwamp()) {
@@ -78,6 +78,21 @@ export const highlightSelectedHex = (hex: Hex) => {
   `
 }
 
+export const highlightPossibleHexes = (hexes: HexWithTerrain[]) => {
+  hexes.forEach((hex) => {
+    const graphicsEl = mapWrapperEl.querySelector(`g[data-hex="${hex.q},${hex.r}"]`)
+    if (!graphicsEl) return ''
+
+    graphicsEl.innerHTML += `
+      <polygon class='possible-hex js-possibleHex' points='${hex.corners.map(({ x, y }, i) => {
+        x += (BORDER_DISTANCE * DX[i]) / 3.5
+        y += (BORDER_DISTANCE * DY[i]) / 3.5
+        return `${x},${y}`
+      })}' fill='none' stroke-width='5' stroke='#f76bff' />
+    `
+  })
+}
+
 const addSteppingStone = (hex: HexWithTerrain) => {
   if (!hex.terrain.hasSteppingStone()) return ''
 
@@ -115,6 +130,6 @@ export const render = (hex: HexWithTerrain): string => {
   result += addCoordinates(hex)
   result += addSteppingStone(hex)
   result += addAbandonedShack(hex)
-  result += highlightSelectedHex(hex)
-  return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive ? '1' : '0.5'}'>${result}</g>`
+  highlightSelectedHex(hex)
+  return `<g data-hex='${hex.q},${hex.r}' style='opacity: ${hex.isActive === false ? '0.5' : '1'}'>${result}</g>`
 }
