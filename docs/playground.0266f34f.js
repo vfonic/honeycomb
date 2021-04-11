@@ -2698,6 +2698,7 @@ const renderTiles = hexagonsOrdered => {
 
 const renderPlayerHints = () => {
   players.forEach((player, i) => {
+    if (i === 0) return;
     document.querySelector('.js-player-' + i).innerHTML = `
       <h4>${players[i].name}</h4>
       ${player.activeHints.map(hint => `<div>${hint}</div>`).join('')}
@@ -2707,11 +2708,14 @@ const renderPlayerHints = () => {
 
 const renderPlayerHintsForHighlightedHex = () => {
   if (!isGameStarted) return;
+
+  const shortenName = name => name.replace(' three ', ' 3 ').replace(' two ', ' 2 ').replace(' one ', ' 1 ').replace('bear territory', 'bears').replace('cougar territory', 'cougars').replace('an abandoned shack', 'a shack').replace(' structure', '').replace(' either animal territory', 'any animal');
+
   const hex = grid.store.get(selectedHexKey);
   players.forEach((player, i) => {
     document.querySelector('.js-playerHighlightedHex-' + i).innerHTML = `
       <h4>${players[i].name} [${selectedHexKey}]</h4>
-      ${player.activeHints.filter(hint => hint.isPossibleOnHex(grid, hex)).map(hint => `<div>${hint}</div>`).join('')}
+      ${player.activeHints.filter(hint => hint.isPossibleOnHex(grid, hex)).map(hint => `<div>${shortenName(hint.name)}</div>`).join('')}
     `;
   });
 };
@@ -2775,15 +2779,13 @@ const printAndHighlightBestHexes = hexagonsOrdered => {
 
   document.querySelectorAll('.js-possibleHex').forEach(el => el.remove());
   (0, _render.highlightPossibleHexes)(possibleHexes);
-  const hexesInDivs = possibleHexes.map(hex => `<div>${hex}</div>`).join('');
-  document.getElementById('possible-hexes').innerHTML = hexesInDivs;
 };
 
 const gatherAndRender = () => {
   const hexagonsOrdered = grid.hexes();
   isGameStarted && setActiveHexes(hexagonsOrdered);
-  renderPlayerHints();
-  renderPlayerHintsForHighlightedHex(); // printActiveHintsForPlayers()
+  renderPlayerHints(); // renderPlayerHintsForHighlightedHex()
+  // printActiveHintsForPlayers()
 
   (0, _render.renderAll)(hexagonsOrdered);
   (0, _render.highlightSelectedHex)(grid.store.get(selectedHexKey));
@@ -2796,8 +2798,7 @@ document.addEventListener('click', e => {
   if (!hexEl) return;
   selectedHexKey = hexEl.dataset.hex || '0,0';
   const hex = grid.store.get(selectedHexKey);
-  (0, _render.highlightSelectedHex)(hex);
-  renderPlayerHintsForHighlightedHex();
+  (0, _render.highlightSelectedHex)(hex); // renderPlayerHintsForHighlightedHex()
 });
 (_document$querySelect = document.querySelector('.js-submit')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', () => {
   const gameplayEl = document.getElementById('gameplay');
@@ -2871,10 +2872,11 @@ document.querySelector('.js-startGame').addEventListener('click', () => {
       hint.isActive = activeHexes.some(hex => hint.isPossibleOnHex(grid, hex));
     });
   }); // render dropdown options
+  // skip current player
 
   const playerPlayingDropdown = document.querySelector('.js-playerPlaying');
 
-  for (let i = 0; i < players.length; i++) {
+  for (let i = 1; i < players.length; i++) {
     players[i].name = document.querySelector('input[name="player-' + i + '"]').value;
     playerPlayingDropdown.innerHTML += '<option value="' + players[i].name + '">' + players[i].name + '</option>';
   }
@@ -2885,6 +2887,25 @@ document.querySelector('.js-startGame').addEventListener('click', () => {
   document.querySelector('.js-gameSetup').setAttribute('hidden', '');
   document.querySelector('.js-gameplay').removeAttribute('hidden');
   gatherAndRender(); // printBestHexToAsk(grid.hexes())
+});
+document.querySelector('#number-of-players').addEventListener('input', el => {
+  const playersNumber = Number(el.target.value);
+  const playerNamesEl = document.querySelector('.js-playerNames');
+  const playersEl = document.querySelector('.js-players');
+  const playerHighlightedHexesEl = document.querySelector('.js-playerHighlightedHexes');
+  playerNamesEl.innerHTML = '';
+  playersEl.innerHTML = '';
+  playerHighlightedHexesEl.innerHTML = '';
+
+  for (let i = 0; i < playersNumber; i++) {
+    playerNamesEl.innerHTML += `
+      <div class='col-4'>
+        <input class='form-control' name='player-${i}' placeholder='Player ${i + 1} name' />
+      </div>
+    `;
+    if (i !== 0) playersEl.innerHTML += `<div class='col-4 mt-3 js-player-${i}'></div>`;
+    playerHighlightedHexesEl.innerHTML += `<div class='col-4 player-highlighted-hex js-playerHighlightedHex-${i}'></div>`;
+  }
 });
 },{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts","./player":"playground/player.ts","./terrain":"playground/terrain.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];

@@ -32,6 +32,8 @@ const renderTiles = (hexagonsOrdered: HexWithTerrain[]) => {
 
 const renderPlayerHints = () => {
   players.forEach((player, i) => {
+    if (i === 0) return
+
     document.querySelector('.js-player-' + i)!.innerHTML = `
       <h4>${players[i].name}</h4>
       ${player.activeHints.map((hint) => `<div>${hint}</div>`).join('')}
@@ -42,6 +44,17 @@ const renderPlayerHints = () => {
 const renderPlayerHintsForHighlightedHex = () => {
   if (!isGameStarted) return
 
+  const shortenName = (name: string) =>
+    name
+      .replace(' three ', ' 3 ')
+      .replace(' two ', ' 2 ')
+      .replace(' one ', ' 1 ')
+      .replace('bear territory', 'bears')
+      .replace('cougar territory', 'cougars')
+      .replace('an abandoned shack', 'a shack')
+      .replace(' structure', '')
+      .replace(' either animal territory', 'any animal')
+
   const hex = grid.store.get(selectedHexKey)!
 
   players.forEach((player, i) => {
@@ -49,7 +62,7 @@ const renderPlayerHintsForHighlightedHex = () => {
       <h4>${players[i].name} [${selectedHexKey}]</h4>
       ${player.activeHints
         .filter((hint) => hint.isPossibleOnHex(grid, hex))
-        .map((hint) => `<div>${hint}</div>`)
+        .map((hint) => `<div>${shortenName(hint.name)}</div>`)
         .join('')}
     `
   })
@@ -127,9 +140,6 @@ const printAndHighlightBestHexes = (hexagonsOrdered: HexWithTerrain[]) => {
   document.querySelectorAll('.js-possibleHex').forEach((el) => el.remove())
 
   highlightPossibleHexes(possibleHexes)
-
-  const hexesInDivs = possibleHexes.map((hex) => `<div>${hex}</div>`).join('')
-  document.getElementById('possible-hexes')!.innerHTML = hexesInDivs
 }
 
 const gatherAndRender = () => {
@@ -138,7 +148,7 @@ const gatherAndRender = () => {
   isGameStarted && setActiveHexes(hexagonsOrdered)
 
   renderPlayerHints()
-  renderPlayerHintsForHighlightedHex()
+  // renderPlayerHintsForHighlightedHex()
 
   // printActiveHintsForPlayers()
   renderAll(hexagonsOrdered)
@@ -156,7 +166,7 @@ document.addEventListener('click', (e) => {
   const hex = grid.store.get(selectedHexKey)!
   highlightSelectedHex(hex)
 
-  renderPlayerHintsForHighlightedHex()
+  // renderPlayerHintsForHighlightedHex()
 })
 
 document.querySelector('.js-submit')?.addEventListener('click', () => {
@@ -246,8 +256,9 @@ document.querySelector('.js-startGame')!.addEventListener('click', () => {
   })
 
   // render dropdown options
+  // skip current player
   const playerPlayingDropdown = document.querySelector('.js-playerPlaying')!
-  for (let i = 0; i < players.length; i++) {
+  for (let i = 1; i < players.length; i++) {
     players[i].name = (document.querySelector('input[name="player-' + i + '"]')! as HTMLInputElement).value
     playerPlayingDropdown.innerHTML += '<option value="' + players[i].name + '">' + players[i].name + '</option>'
   }
@@ -262,4 +273,25 @@ document.querySelector('.js-startGame')!.addEventListener('click', () => {
   gatherAndRender()
 
   // printBestHexToAsk(grid.hexes())
+})
+;(document.querySelector('#number-of-players') as HTMLInputElement).addEventListener('input', (el) => {
+  const playersNumber = Number((el.target as HTMLInputElement).value)
+  const playerNamesEl = document.querySelector('.js-playerNames')!
+  const playersEl = document.querySelector('.js-players')!
+  const playerHighlightedHexesEl = document.querySelector('.js-playerHighlightedHexes')!
+
+  playerNamesEl.innerHTML = ''
+  playersEl.innerHTML = ''
+  playerHighlightedHexesEl.innerHTML = ''
+  for (let i = 0; i < playersNumber; i++) {
+    playerNamesEl.innerHTML += `
+      <div class='col-4'>
+        <input class='form-control' name='player-${i}' placeholder='Player ${i + 1} name' />
+      </div>
+    `
+
+    if (i !== 0) playersEl.innerHTML += `<div class='col-4 mt-3 js-player-${i}'></div>`
+
+    playerHighlightedHexesEl.innerHTML += `<div class='col-4 player-highlighted-hex js-playerHighlightedHex-${i}'></div>`
+  }
 })
