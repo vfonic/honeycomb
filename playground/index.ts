@@ -3,7 +3,6 @@ import { tilesToArray } from './tiles'
 import { cloneHex, createHexPrototype, Grid, rectangle } from '../src'
 import { Player } from './player'
 import { Tile } from './terrain'
-import { ALL_HINTS } from './hint'
 
 const hexPrototype = createHexPrototype<HexWithTerrain>({
   dimensions: { width: 60, height: 51.96 },
@@ -14,6 +13,7 @@ const hexPrototype = createHexPrototype<HexWithTerrain>({
 let grid = new Grid(hexPrototype, rectangle({ width: 12, height: 9 }))
 
 let selectedHexKey = '0,0'
+let isGameStarted = false
 
 let players: Player[] = []
 
@@ -22,19 +22,35 @@ const renderTiles = (hexagonsOrdered: HexWithTerrain[]) => {
   highlightSelectedHex(grid.store.get(selectedHexKey)!)
 }
 
-const printActiveHintsForPlayers = () => {
-  players.forEach((player) => {
-    console.log(`${player.name}:`)
-    console.log(player.activeHints.map((h) => h.name).join('\n'))
-    console.log('')
-  })
-}
+// const printActiveHintsForPlayers = () => {
+//   players.forEach((player) => {
+//     console.log(`${player.name}:`)
+//     console.log(player.activeHints.map((h) => h.name).join('\n'))
+//     console.log('')
+//   })
+// }
 
 const renderPlayerHints = () => {
   players.forEach((player, i) => {
     document.querySelector('.js-player-' + i)!.innerHTML = `
       <h4>${players[i].name}</h4>
       ${player.activeHints.map((hint) => `<div>${hint}</div>`).join('')}
+    `
+  })
+}
+
+const renderPlayerHintsForHighlightedHex = () => {
+  if (!isGameStarted) return
+
+  const hex = grid.store.get(selectedHexKey)!
+
+  players.forEach((player, i) => {
+    document.querySelector('.js-playerHighlightedHex-' + i)!.innerHTML = `
+      <h4>${players[i].name} [${selectedHexKey}]</h4>
+      ${player.activeHints
+        .filter((hint) => hint.isPossibleOnHex(grid, hex))
+        .map((hint) => `<div>${hint}</div>`)
+        .join('')}
     `
   })
 }
@@ -116,20 +132,19 @@ const printAndHighlightBestHexes = (hexagonsOrdered: HexWithTerrain[]) => {
   document.getElementById('possible-hexes')!.innerHTML = hexesInDivs
 }
 
-const gatherAndRender = (isGameStarted = false) => {
+const gatherAndRender = () => {
   const hexagonsOrdered = grid.hexes()
 
-  const hasGameStarted = isGameStarted || document.querySelector('.js-gameSetup')!.getAttribute('hidden') === ''
-
-  hasGameStarted && setActiveHexes(hexagonsOrdered)
+  isGameStarted && setActiveHexes(hexagonsOrdered)
 
   renderPlayerHints()
+  renderPlayerHintsForHighlightedHex()
 
-  printActiveHintsForPlayers()
+  // printActiveHintsForPlayers()
   renderAll(hexagonsOrdered)
   highlightSelectedHex(grid.store.get(selectedHexKey)!)
 
-  hasGameStarted && printAndHighlightBestHexes(hexagonsOrdered)
+  isGameStarted && printAndHighlightBestHexes(hexagonsOrdered)
 }
 
 document.addEventListener('click', (e) => {
@@ -141,30 +156,7 @@ document.addEventListener('click', (e) => {
   const hex = grid.store.get(selectedHexKey)!
   highlightSelectedHex(hex)
 
-  const allPlayersHintsArrays: number[] = []
-  players.forEach((player) => {
-    let hintsArray = 0
-    player.activeHints.forEach((hint) => {
-      const isPossibleOnHex = hint.isActive && hint.isPossibleOnHex(grid, hex)
-      hintsArray = hintsArray * 2 + (isPossibleOnHex ? 1 : 0)
-    })
-    hintsArray && allPlayersHintsArrays.push(hintsArray)
-  })
-
-  // if we skipped one player because he didn't have a single hint possible on the hex, skip adding hex
-  if (allPlayersHintsArrays.length !== players.length) return
-
-  // count each possible hint only once:
-  // 1010 | 1100 = 1110 => 3x 1 (three active hints)
-  const ones = allPlayersHintsArrays.reduce((accumulator, current) => accumulator | current, 0)
-
-  const onesStringBinary = ones.toString(2).padStart(ALL_HINTS.length, '0').split('')
-  console.log(onesStringBinary.join(''))
-  players[0].hints.forEach((hint, index) => {
-    if (onesStringBinary[index] === '1') {
-      console.log(hint.toString())
-    }
-  })
+  renderPlayerHintsForHighlightedHex()
 })
 
 document.querySelector('.js-submit')?.addEventListener('click', () => {
@@ -263,10 +255,11 @@ document.querySelector('.js-startGame')!.addEventListener('click', () => {
   renderPlayerHints()
 
   // show gameplay
+  isGameStarted = true
   document.querySelector('.js-gameSetup')!.setAttribute('hidden', '')
   document.querySelector('.js-gameplay')!.removeAttribute('hidden')
 
-  gatherAndRender(true)
+  gatherAndRender()
 
   // printBestHexToAsk(grid.hexes())
 })

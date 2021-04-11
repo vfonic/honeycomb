@@ -26,8 +26,8 @@ const fillHexagon = (hex: HexWithTerrain) => {
   }
   return ` 
     <polygon class='js-highlightHex' points='${hex.corners
-      .map(({ x, y }) => `${x},${y}`)
-      .join(',')}' fill='${fill}'></polygon>
+    .map(({ x, y }) => `${x},${y}`)
+    .join(',')}' fill='${fill}'></polygon>
   `
 }
 
@@ -43,10 +43,10 @@ const addBearsAndCougars = (hex: HexWithTerrain) => {
 
   return `
     <polygon points='${hex.corners.map(({ x, y }, i) => {
-      x += BORDER_DISTANCE * DX[i]
-      y += BORDER_DISTANCE * DY[i]
-      return `${x},${y}`
-    })}' fill='none' stroke-width='1.5' stroke='${color}' />
+    x += BORDER_DISTANCE * DX[i]
+    y += BORDER_DISTANCE * DY[i]
+    return `${x},${y}`
+  })}' fill='none' stroke-width='1.5' stroke='${color}' />
   `
 }
 
@@ -71,10 +71,10 @@ export const highlightSelectedHex = (hex: Hex) => {
 
   graphicsEl.innerHTML += `
     <polygon highlighted points='${hex.corners.map(({ x, y }, i) => {
-      x += (BORDER_DISTANCE * DX[i]) / 3
-      y += (BORDER_DISTANCE * DY[i]) / 3
-      return `${x},${y}`
-    })}' fill='none' stroke-width='2' stroke='#fff' />
+    x += (BORDER_DISTANCE * DX[i]) / 3
+    y += (BORDER_DISTANCE * DY[i]) / 3
+    return `${x},${y}`
+  })}' fill='none' stroke-width='2' stroke='#fff' />
   `
 }
 
@@ -85,10 +85,10 @@ export const highlightPossibleHexes = (hexes: HexWithTerrain[]) => {
 
     graphicsEl.innerHTML += `
       <polygon class='possible-hex js-possibleHex' points='${hex.corners.map(({ x, y }, i) => {
-        x += (BORDER_DISTANCE * DX[i]) / 3.5
-        y += (BORDER_DISTANCE * DY[i]) / 3.5
-        return `${x},${y}`
-      })}' fill='none' stroke-width='5' stroke='#f76bff' />
+      x += (BORDER_DISTANCE * DX[i]) / 3.5
+      y += (BORDER_DISTANCE * DY[i]) / 3.5
+      return `${x},${y}`
+    })}' fill='none' stroke-width='5' stroke='#f76bff' />
     `
   })
 }

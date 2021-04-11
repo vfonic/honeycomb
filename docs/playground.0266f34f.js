@@ -2666,8 +2666,6 @@ var _player = require("./player");
 
 var _terrain = require("./terrain");
 
-var _hint = require("./hint");
-
 var _document$querySelect;
 
 const hexPrototype = (0, _src.createHexPrototype)({
@@ -2683,26 +2681,37 @@ let grid = new _src.Grid(hexPrototype, (0, _src.rectangle)({
   height: 9
 }));
 let selectedHexKey = '0,0';
+let isGameStarted = false;
 let players = [];
 
 const renderTiles = hexagonsOrdered => {
   (0, _render.renderAll)(hexagonsOrdered);
   (0, _render.highlightSelectedHex)(grid.store.get(selectedHexKey));
-};
+}; // const printActiveHintsForPlayers = () => {
+//   players.forEach((player) => {
+//     console.log(`${player.name}:`)
+//     console.log(player.activeHints.map((h) => h.name).join('\n'))
+//     console.log('')
+//   })
+// }
 
-const printActiveHintsForPlayers = () => {
-  players.forEach(player => {
-    console.log(`${player.name}:`);
-    console.log(player.activeHints.map(h => h.name).join('\n'));
-    console.log('');
-  });
-};
 
 const renderPlayerHints = () => {
   players.forEach((player, i) => {
     document.querySelector('.js-player-' + i).innerHTML = `
       <h4>${players[i].name}</h4>
       ${player.activeHints.map(hint => `<div>${hint}</div>`).join('')}
+    `;
+  });
+};
+
+const renderPlayerHintsForHighlightedHex = () => {
+  if (!isGameStarted) return;
+  const hex = grid.store.get(selectedHexKey);
+  players.forEach((player, i) => {
+    document.querySelector('.js-playerHighlightedHex-' + i).innerHTML = `
+      <h4>${players[i].name} [${selectedHexKey}]</h4>
+      ${player.activeHints.filter(hint => hint.isPossibleOnHex(grid, hex)).map(hint => `<div>${hint}</div>`).join('')}
     `;
   });
 };
@@ -2770,15 +2779,15 @@ const printAndHighlightBestHexes = hexagonsOrdered => {
   document.getElementById('possible-hexes').innerHTML = hexesInDivs;
 };
 
-const gatherAndRender = (isGameStarted = false) => {
+const gatherAndRender = () => {
   const hexagonsOrdered = grid.hexes();
-  const hasGameStarted = isGameStarted || document.querySelector('.js-gameSetup').getAttribute('hidden') === '';
-  hasGameStarted && setActiveHexes(hexagonsOrdered);
+  isGameStarted && setActiveHexes(hexagonsOrdered);
   renderPlayerHints();
-  printActiveHintsForPlayers();
+  renderPlayerHintsForHighlightedHex(); // printActiveHintsForPlayers()
+
   (0, _render.renderAll)(hexagonsOrdered);
   (0, _render.highlightSelectedHex)(grid.store.get(selectedHexKey));
-  hasGameStarted && printAndHighlightBestHexes(hexagonsOrdered);
+  isGameStarted && printAndHighlightBestHexes(hexagonsOrdered);
 };
 
 document.addEventListener('click', e => {
@@ -2788,27 +2797,7 @@ document.addEventListener('click', e => {
   selectedHexKey = hexEl.dataset.hex || '0,0';
   const hex = grid.store.get(selectedHexKey);
   (0, _render.highlightSelectedHex)(hex);
-  const allPlayersHintsArrays = [];
-  players.forEach(player => {
-    let hintsArray = 0;
-    player.activeHints.forEach(hint => {
-      const isPossibleOnHex = hint.isActive && hint.isPossibleOnHex(grid, hex);
-      hintsArray = hintsArray * 2 + (isPossibleOnHex ? 1 : 0);
-    });
-    hintsArray && allPlayersHintsArrays.push(hintsArray);
-  }); // if we skipped one player because he didn't have a single hint possible on the hex, skip adding hex
-
-  if (allPlayersHintsArrays.length !== players.length) return; // count each possible hint only once:
-  // 1010 | 1100 = 1110 => 3x 1 (three active hints)
-
-  const ones = allPlayersHintsArrays.reduce((accumulator, current) => accumulator | current, 0);
-  const onesStringBinary = ones.toString(2).padStart(_hint.ALL_HINTS.length, '0').split('');
-  console.log(onesStringBinary.join(''));
-  players[0].hints.forEach((hint, index) => {
-    if (onesStringBinary[index] === '1') {
-      console.log(hint.toString());
-    }
-  });
+  renderPlayerHintsForHighlightedHex();
 });
 (_document$querySelect = document.querySelector('.js-submit')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', () => {
   const gameplayEl = document.getElementById('gameplay');
@@ -2892,11 +2881,12 @@ document.querySelector('.js-startGame').addEventListener('click', () => {
 
   renderPlayerHints(); // show gameplay
 
+  isGameStarted = true;
   document.querySelector('.js-gameSetup').setAttribute('hidden', '');
   document.querySelector('.js-gameplay').removeAttribute('hidden');
-  gatherAndRender(true); // printBestHexToAsk(grid.hexes())
+  gatherAndRender(); // printBestHexToAsk(grid.hexes())
 });
-},{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts","./player":"playground/player.ts","./terrain":"playground/terrain.ts","./hint":"playground/hint.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./render":"playground/render.ts","./tiles":"playground/tiles.ts","../src":"src/index.ts","./player":"playground/player.ts","./terrain":"playground/terrain.ts"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
